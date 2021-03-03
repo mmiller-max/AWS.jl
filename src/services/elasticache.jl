@@ -117,7 +117,7 @@ Creates a cluster. All nodes in the cluster run the same protocol-compliant cach
 - `Port`: The port number on which each of the cache nodes accepts connections.
 - `PreferredAvailabilityZone`: The EC2 Availability Zone in which the cluster is created. All nodes belonging to this cluster are placed in the preferred Availability Zone. If you want to create your nodes across multiple Availability Zones, use PreferredAvailabilityZones. Default: System chosen Availability Zone.
 - `PreferredAvailabilityZones`: A list of the Availability Zones in which cache nodes are created. The order of the zones in the list is not important. This option is only supported on Memcached.  If you are creating your cluster in an Amazon VPC (recommended) you can only locate nodes in Availability Zones that are associated with the subnets in the selected subnet group. The number of Availability Zones listed must equal the value of NumCacheNodes.  If you want all the nodes in the same Availability Zone, use PreferredAvailabilityZone instead, or repeat the Availability Zone multiple times in the list. Default: System chosen Availability Zones.
-- `PreferredMaintenanceWindow`: Specifies the weekly time range during which maintenance on the cluster is performed. It is specified as a range in the format ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC). The minimum maintenance window is a 60 minute period. Valid values for ddd are: Specifies the weekly time range during which maintenance on the cluster is performed. It is specified as a range in the format ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC). The minimum maintenance window is a 60 minute period. Valid values for ddd are:    sun     mon     tue     wed     thu     fri     sat    Example: sun:23:00-mon:01:30 
+- `PreferredMaintenanceWindow`: Specifies the weekly time range during which maintenance on the cluster is performed. It is specified as a range in the format ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC). The minimum maintenance window is a 60 minute period. Valid values for ddd are:
 - `PreferredOutpostArn`: The outpost ARN in which the cache cluster is created.
 - `PreferredOutpostArns`: The outpost ARNs in which the cache cluster is created.
 - `ReplicationGroupId`: The ID of the replication group to which this cluster should belong. If this parameter is specified, the cluster is added to the specified replication group as a read replica; otherwise, the cluster is a standalone primary that is not part of any replication group. If the specified replication group is Multi-AZ enabled and the Availability Zone is not specified, the cluster is created in Availability Zones that provide the best spread of read replicas across Availability Zones.  This parameter is only valid if the Engine parameter is redis. 
@@ -207,7 +207,7 @@ Creates a Redis (cluster mode disabled) or a Redis (cluster mode enabled) replic
 - `CacheParameterGroupName`: The name of the parameter group to associate with this replication group. If this argument is omitted, the default cache parameter group for the specified engine is used. If you are running Redis version 3.2.4 or later, only one node group (shard), and want to use a default parameter group, we recommend that you specify the parameter group by name.    To create a Redis (cluster mode disabled) replication group, use CacheParameterGroupName=default.redis3.2.   To create a Redis (cluster mode enabled) replication group, use CacheParameterGroupName=default.redis3.2.cluster.on.  
 - `CacheSecurityGroupNames`: A list of cache security group names to associate with this replication group.
 - `CacheSubnetGroupName`: The name of the cache subnet group to be used for the replication group.  If you're going to launch your cluster in an Amazon VPC, you need to create a subnet group before you start creating a cluster. For more information, see Subnets and Subnet Groups. 
-- `Engine`: The name of the cache engine to be used for the clusters in this replication group.
+- `Engine`: The name of the cache engine to be used for the clusters in this replication group. Must be Redis.
 - `EngineVersion`: The version number of the cache engine to be used for the clusters in this replication group. To view the supported cache engine versions, use the DescribeCacheEngineVersions operation.  Important: You can upgrade to a newer engine version (see Selecting a Cache Engine and Version) in the ElastiCache User Guide, but you cannot downgrade to an earlier engine version. If you want to use an earlier engine version, you must delete the existing cluster or replication group and create it anew with the earlier engine version. 
 - `GlobalReplicationGroupId`: The name of the Global Datastore
 - `KmsKeyId`: The ID of the KMS key used to encrypt the disk in the cluster.
@@ -357,7 +357,7 @@ delete_cache_security_group(CacheSecurityGroupName, args::AbstractDict{String, <
 """
     DeleteCacheSubnetGroup()
 
-Deletes a cache subnet group.  You cannot delete a cache subnet group if it is associated with any clusters. 
+Deletes a cache subnet group.  You cannot delete a default cache subnet group or one that is associated with any clusters. 
 
 # Required Parameters
 - `CacheSubnetGroupName`: The name of the cache subnet group to delete. Constraints: Must contain no more than 255 alphanumeric characters or hyphens.
@@ -892,7 +892,7 @@ modify_replication_group(ReplicationGroupId, args::AbstractDict{String, <:Any}; 
 """
     ModifyReplicationGroupShardConfiguration()
 
-Modifies a replication group's shards (node groups) by allowing you to add shards, remove shards, or rebalance the keyspaces among exisiting shards.
+Modifies a replication group's shards (node groups) by allowing you to add shards, remove shards, or rebalance the keyspaces among existing shards.
 
 # Required Parameters
 - `ApplyImmediately`: Indicates that the shard reconfiguration process begins immediately. At present, the only permitted value for this parameter is true. Value: true

@@ -74,6 +74,7 @@ Creates a Function object. A function is a reusable entity. Multiple functions c
 - `description`: The Function description.
 - `requestMappingTemplate`: The Function request mapping template. Functions support only the 2018-05-29 version of the request mapping template.
 - `responseMappingTemplate`: The Function response mapping template. 
+- `syncConfig`: 
 """
 create_function(apiId, dataSourceName, functionVersion, name; aws_config::AbstractAWSConfig=global_aws_config()) = appsync("POST", "/v1/apis/$(apiId)/functions", Dict{String, Any}("dataSourceName"=>dataSourceName, "functionVersion"=>functionVersion, "name"=>name); aws_config=aws_config)
 create_function(apiId, dataSourceName, functionVersion, name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = appsync("POST", "/v1/apis/$(apiId)/functions", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("dataSourceName"=>dataSourceName, "functionVersion"=>functionVersion, "name"=>name), args)); aws_config=aws_config)
@@ -566,6 +567,7 @@ Updates a Function object.
 - `description`: The Function description.
 - `requestMappingTemplate`: The Function request mapping template. Functions support only the 2018-05-29 version of the request mapping template.
 - `responseMappingTemplate`: The Function request mapping template. 
+- `syncConfig`: 
 """
 update_function(apiId, dataSourceName, functionId, functionVersion, name; aws_config::AbstractAWSConfig=global_aws_config()) = appsync("POST", "/v1/apis/$(apiId)/functions/$(functionId)", Dict{String, Any}("dataSourceName"=>dataSourceName, "functionVersion"=>functionVersion, "name"=>name); aws_config=aws_config)
 update_function(apiId, dataSourceName, functionId, functionVersion, name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = appsync("POST", "/v1/apis/$(apiId)/functions/$(functionId)", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("dataSourceName"=>dataSourceName, "functionVersion"=>functionVersion, "name"=>name), args)); aws_config=aws_config)

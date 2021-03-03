@@ -446,14 +446,14 @@ Creates a job that uses workers to label the data objects in your input dataset.
 
 # Required Parameters
 - `HumanTaskConfig`: Configures the labeling task and how it is presented to workers; including, but not limited to price, keywords, and batch size (task count).
-- `InputConfig`: Input data for the labeling job, such as the Amazon S3 location of the data objects and the location of the manifest file that describes the data objects.
-- `LabelAttributeName`: The attribute name to use for the label in the output manifest file. This is the key for the key/value pair formed with the label that a worker assigns to the object. The name can't end with \"-metadata\". If you are running a semantic segmentation labeling job, the attribute name must end with \"-ref\". If you are running any other kind of labeling job, the attribute name must not end with \"-ref\".
+- `InputConfig`: Input data for the labeling job, such as the Amazon S3 location of the data objects and the location of the manifest file that describes the data objects. You must specify at least one of the following: S3DataSource or SnsDataSource.    Use SnsDataSource to specify an SNS input topic for a streaming labeling job. If you do not specify and SNS input topic ARN, Ground Truth will create a one-time labeling job that stops after all data objects in the input manifest file have been labeled.   Use S3DataSource to specify an input manifest file for both streaming and one-time labeling jobs. Adding an S3DataSource is optional if you use SnsDataSource to create a streaming labeling job.   If you use the Amazon Mechanical Turk workforce, your input data should not include confidential information, personal information or protected health information. Use ContentClassifiers to specify that your data is free of personally identifiable information and adult content.
+- `LabelAttributeName`: The attribute name to use for the label in the output manifest file. This is the key for the key/value pair formed with the label that a worker assigns to the object. The LabelAttributeName must meet the following requirements.   The name can't end with \"-metadata\".    If you are using one of the following built-in task types, the attribute name must end with \"-ref\". If the task type you are using is not listed below, the attribute name must not end with \"-ref\".   Image semantic segmentation (SemanticSegmentation), and adjustment (AdjustmentSemanticSegmentation) and verification (VerificationSemanticSegmentation) labeling jobs for this task type.   Video frame object detection (VideoObjectDetection), and adjustment and verification (AdjustmentVideoObjectDetection) labeling jobs for this task type.   Video frame object tracking (VideoObjectTracking), and adjustment and verification (AdjustmentVideoObjectTracking) labeling jobs for this task type.   3D point cloud semantic segmentation (3DPointCloudSemanticSegmentation), and adjustment and verification (Adjustment3DPointCloudSemanticSegmentation) labeling jobs for this task type.    3D point cloud object tracking (3DPointCloudObjectTracking), and adjustment and verification (Adjustment3DPointCloudObjectTracking) labeling jobs for this task type.        If you are creating an adjustment or verification labeling job, you must use a different LabelAttributeName than the one used in the original labeling job. The original labeling job is the Ground Truth labeling job that produced the labels that you want verified or adjusted. To learn more about adjustment and verification labeling jobs, see Verify and Adjust Labels. 
 - `LabelingJobName`: The name of the labeling job. This name is used to identify the job in a list of labeling jobs. Labeling job names must be unique within an AWS account and region. LabelingJobName is not case sensitive. For example, Example-job and example-job are considered the same labeling job name by Ground Truth.
 - `OutputConfig`: The location of the output data and the AWS Key Management Service key ID for the key used to encrypt the output data, if any.
 - `RoleArn`: The Amazon Resource Number (ARN) that Amazon SageMaker assumes to perform tasks on your behalf during data labeling. You must grant this role the necessary permissions so that Amazon SageMaker can successfully complete data labeling.
 
 # Optional Parameters
-- `LabelCategoryConfigS3Uri`: The S3 URI of the file, referred to as a label category configuration file, that defines the categories used to label the data objects. For 3D point cloud and video frame task types, you can add label category attributes and frame attributes to your label category configuration file. To learn how, see Create a Labeling Category Configuration File for 3D Point Cloud Labeling Jobs.  For all other built-in task types and custom tasks, your label category configuration file must be a JSON file in the following format. Identify the labels you want to use by replacing label_1, label_2,...,label_n with your label categories.  {    \"document-version\": \"2018-11-28\"    \"labels\": [    {    \"label\": \"label_1\"    },    {    \"label\": \"label_2\"    },    ...    {    \"label\": \"label_n\"    }    ]   } 
+- `LabelCategoryConfigS3Uri`: The S3 URI of the file, referred to as a label category configuration file, that defines the categories used to label the data objects. For 3D point cloud and video frame task types, you can add label category attributes and frame attributes to your label category configuration file. To learn how, see Create a Labeling Category Configuration File for 3D Point Cloud Labeling Jobs.  For all other built-in task types and custom tasks, your label category configuration file must be a JSON file in the following format. Identify the labels you want to use by replacing label_1, label_2,...,label_n with your label categories.  {    \"document-version\": \"2018-11-28\",   \"labels\": [{\"label\": \"label_1\"},{\"label\": \"label_2\"},...{\"label\": \"label_n\"}]   }  Note the following about the label category configuration file:   For image classification and text classification (single and multi-label) you must specify at least two label categories. For all other task types, the minimum number of label categories required is one.    Each label category must be unique, you cannot specify duplicate label categories.   If you create a 3D point cloud or video frame adjustment or verification labeling job, you must include auditLabelAttributeName in the label category configuration. Use this parameter to enter the  LabelAttributeName  of the labeling job you want to adjust or verify annotations of.  
 - `LabelingJobAlgorithmsConfig`: Configures the information required to perform automated data labeling.
 - `StoppingConditions`: A set of conditions for stopping the labeling job. If any of the conditions are met, the job is automatically stopped. You can use these conditions to control the cost of data labeling.
 - `Tags`: An array of key/value pairs. For more information, see Using Cost Allocation Tags in the AWS Billing and Cost Management User Guide.
@@ -473,6 +473,7 @@ Creates a model in Amazon SageMaker. In the request, you name the model and desc
 # Optional Parameters
 - `Containers`: Specifies the containers in the inference pipeline.
 - `EnableNetworkIsolation`: Isolates the model container. No inbound or outbound network calls can be made to or from the model container.
+- `InferenceExecutionConfig`: Specifies details of how containers in a multi-container endpoint are called.
 - `PrimaryContainer`: The location of the primary docker image containing inference code, associated artifacts, and custom environment map that the inference code uses when the model is deployed for predictions. 
 - `Tags`: An array of key-value pairs. You can use tags to categorize your AWS resources in different ways, for example, by purpose, owner, or environment. For more information, see Tagging AWS Resources.
 - `VpcConfig`: A VpcConfig object that specifies the VPC that you want your model to connect to. Control access to and from your model container by configuring the VPC. VpcConfig is used in hosting services and in batch transform. For more information, see Protect Endpoints by Using an Amazon Virtual Private Cloud and Protect Data in Batch Transform Jobs by Using an Amazon Virtual Private Cloud.
@@ -661,14 +662,15 @@ create_pipeline(ClientRequestToken, PipelineDefinition, PipelineName, RoleArn, a
 """
     CreatePresignedDomainUrl()
 
-Creates a URL for a specified UserProfile in a Domain. When accessed in a web browser, the user will be automatically signed in to Amazon SageMaker Studio, and granted access to all of the Apps and files associated with the Domain's Amazon Elastic File System (EFS) volume. This operation can only be called when the authentication mode equals IAM.   The URL that you get from a call to CreatePresignedDomainUrl is valid only for 5 minutes. If you try to use the URL after the 5-minute limit expires, you are directed to the AWS console sign-in page. 
+Creates a URL for a specified UserProfile in a Domain. When accessed in a web browser, the user will be automatically signed in to Amazon SageMaker Studio, and granted access to all of the Apps and files associated with the Domain's Amazon Elastic File System (EFS) volume. This operation can only be called when the authentication mode equals IAM.   The URL that you get from a call to CreatePresignedDomainUrl has a default timeout of 5 minutes. You can configure this value using ExpiresInSeconds. If you try to use the URL after the timeout limit expires, you are directed to the AWS console sign-in page. 
 
 # Required Parameters
 - `DomainId`: The domain ID.
 - `UserProfileName`: The name of the UserProfile to sign-in as.
 
 # Optional Parameters
-- `SessionExpirationDurationInSeconds`: The session expiration duration in seconds.
+- `ExpiresInSeconds`: The number of seconds until the pre-signed URL expires. This value defaults to 300.
+- `SessionExpirationDurationInSeconds`: The session expiration duration in seconds. This value defaults to 43200.
 """
 create_presigned_domain_url(DomainId, UserProfileName; aws_config::AbstractAWSConfig=global_aws_config()) = sagemaker("CreatePresignedDomainUrl", Dict{String, Any}("DomainId"=>DomainId, "UserProfileName"=>UserProfileName); aws_config=aws_config)
 create_presigned_domain_url(DomainId, UserProfileName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = sagemaker("CreatePresignedDomainUrl", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("DomainId"=>DomainId, "UserProfileName"=>UserProfileName), args)); aws_config=aws_config)
@@ -699,10 +701,10 @@ Creates a processing job.
 - `RoleArn`: The Amazon Resource Name (ARN) of an IAM role that Amazon SageMaker can assume to perform tasks on your behalf.
 
 # Optional Parameters
-- `Environment`: Sets the environment variables in the Docker container.
+- `Environment`: The environment variables to set in the Docker container. Up to 100 key and values entries in the map are supported.
 - `ExperimentConfig`: 
-- `NetworkConfig`: Networking options for a processing job.
-- `ProcessingInputs`: List of input configurations for the processing job.
+- `NetworkConfig`: Networking options for a processing job, such as whether to allow inbound and outbound network calls to and from processing containers, and the VPC subnets and security groups to use for VPC-enabled processing jobs.
+- `ProcessingInputs`: An array of inputs configuring the data to download into the processing container.
 - `ProcessingOutputConfig`: Output configuration for the processing job.
 - `StoppingCondition`: The time limit for how long the processing job is allowed to run.
 - `Tags`: (Optional) An array of key-value pairs. For more information, see Using Cost Allocation Tags in the AWS Billing and Cost Management User Guide.
@@ -2806,7 +2808,7 @@ list_tags(ResourceArn, args::AbstractDict{String, <:Any}; aws_config::AbstractAW
 """
     ListTrainingJobs()
 
-Lists training jobs.
+Lists training jobs.  When StatusEquals and MaxResults are set at the same time, the MaxResults number of training jobs are first retrieved ignoring the StatusEquals parameter and then they are filtered by the StatusEquals parameter, which is returned as a response. For example, if ListTrainingJobs is invoked with the following parameters:  { ... MaxResults: 100, StatusEquals: InProgress ... }  Then, 100 trainings jobs with any status including those other than InProgress are selected first (sorted according the creation time, from the latest to the oldest) and those with status InProgress are returned. You can quickly test the API using the following AWS CLI code.  aws sagemaker list-training-jobs --max-results 100 --status-equals InProgress  
 
 # Optional Parameters
 - `CreationTimeAfter`: A filter that returns only training jobs created after the specified time (timestamp).

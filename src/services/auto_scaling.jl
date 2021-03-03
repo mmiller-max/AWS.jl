@@ -443,11 +443,12 @@ describe_policies(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConf
 """
     DescribeScalingActivities()
 
-Describes one or more scaling activities for the specified Auto Scaling group.
+Describes one or more scaling activities for the specified Auto Scaling group. To view the scaling activities from the Amazon EC2 Auto Scaling console, choose the Activity tab of the Auto Scaling group. When scaling events occur, you see scaling activity messages in the Activity history. For more information, see Verifying a scaling activity for an Auto Scaling group in the Amazon EC2 Auto Scaling User Guide.
 
 # Optional Parameters
 - `ActivityIds`: The activity IDs of the desired scaling activities. You can specify up to 50 IDs. If you omit this parameter, all activities for the past six weeks are described. If unknown activities are requested, they are ignored with no error. If you specify an Auto Scaling group, the results are limited to that group.
 - `AutoScalingGroupName`: The name of the Auto Scaling group.
+- `IncludeDeletedGroups`: Indicates whether to include scaling activity from deleted Auto Scaling groups.
 - `MaxRecords`: The maximum number of items to return with this call. The default value is 100 and the maximum value is 100.
 - `NextToken`: The token for the next set of items to return. (You received this token from a previous call.)
 """

@@ -46,7 +46,7 @@ create_bucket(name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSCo
 """
     CreateJob()
 
-S3 Batch Operations performs large-scale Batch Operations on Amazon S3 objects. Batch Operations can run a single operation or action on lists of Amazon S3 objects that you specify. For more information, see S3 Batch Operations in the Amazon Simple Storage Service Developer Guide. This operation creates an S3 Batch Operations job.  Related actions include:    DescribeJob     ListJobs     UpdateJobPriority     UpdateJobStatus   
+You can use S3 Batch Operations to perform large-scale batch operations on Amazon S3 objects. Batch Operations can run a single operation on lists of Amazon S3 objects that you specify. For more information, see S3 Batch Operations in the Amazon Simple Storage Service Developer Guide. This operation creates a S3 Batch Operations job.  Related actions include:    DescribeJob     ListJobs     UpdateJobPriority     UpdateJobStatus     JobOperation   
 
 # Required Parameters
 - `ClientRequestToken`: An idempotency token to ensure that you don't accidentally submit the same request twice. You can use any string up to the maximum length.
@@ -171,7 +171,7 @@ delete_public_access_block(x_amz_account_id, args::AbstractDict{String, <:Any}; 
 """
     DeleteStorageLensConfiguration()
 
-Deletes the Amazon S3 Storage Lens configuration. For more information about S3 Storage Lens, see Working with Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:DeleteStorageLensConfiguration action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
+Deletes the Amazon S3 Storage Lens configuration. For more information about S3 Storage Lens, see Assessing your storage activity and usage with Amazon S3 Storage Lens  in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:DeleteStorageLensConfiguration action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
 
 # Required Parameters
 - `storagelensid`: The ID of the S3 Storage Lens configuration.
@@ -184,7 +184,7 @@ delete_storage_lens_configuration(storagelensid, x_amz_account_id, args::Abstrac
 """
     DeleteStorageLensConfigurationTagging()
 
-Deletes the Amazon S3 Storage Lens configuration tags. For more information about S3 Storage Lens, see Working with Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:DeleteStorageLensConfigurationTagging action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
+Deletes the Amazon S3 Storage Lens configuration tags. For more information about S3 Storage Lens, see Assessing your storage activity and usage with Amazon S3 Storage Lens  in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:DeleteStorageLensConfigurationTagging action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
 
 # Required Parameters
 - `storagelensid`: The ID of the S3 Storage Lens configuration.
@@ -201,7 +201,7 @@ Retrieves the configuration parameters and status for a Batch Operations job. Fo
 
 # Required Parameters
 - `id`: The ID for the job whose information you want to retrieve.
-- `x-amz-account-id`: 
+- `x-amz-account-id`: The AWS account ID associated with the S3 Batch Operations job.
 
 """
 describe_job(id, x_amz_account_id; aws_config::AbstractAWSConfig=global_aws_config()) = s3_control("GET", "/v20180820/jobs/$(id)", Dict{String, Any}("headers"=>Dict{String, Any}("x-amz-account-id"=>x_amz_account_id)); aws_config=aws_config)
@@ -326,7 +326,7 @@ get_public_access_block(x_amz_account_id, args::AbstractDict{String, <:Any}; aws
 """
     GetStorageLensConfiguration()
 
-Gets the Amazon S3 Storage Lens configuration. For more information, see Working with Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:GetStorageLensConfiguration action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
+Gets the Amazon S3 Storage Lens configuration. For more information, see Assessing your storage activity and usage with Amazon S3 Storage Lens  in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:GetStorageLensConfiguration action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
 
 # Required Parameters
 - `storagelensid`: The ID of the Amazon S3 Storage Lens configuration.
@@ -339,7 +339,7 @@ get_storage_lens_configuration(storagelensid, x_amz_account_id, args::AbstractDi
 """
     GetStorageLensConfigurationTagging()
 
-Gets the tags of Amazon S3 Storage Lens configuration. For more information about S3 Storage Lens, see Working with Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:GetStorageLensConfigurationTagging action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
+Gets the tags of Amazon S3 Storage Lens configuration. For more information about S3 Storage Lens, see Assessing your storage activity and usage with Amazon S3 Storage Lens  in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:GetStorageLensConfigurationTagging action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
 
 # Required Parameters
 - `storagelensid`: The ID of the Amazon S3 Storage Lens configuration.
@@ -371,7 +371,7 @@ list_access_points(x_amz_account_id, args::AbstractDict{String, <:Any}; aws_conf
 Lists current S3 Batch Operations jobs and jobs that have ended within the last 30 days for the AWS account making the request. For more information, see S3 Batch Operations in the Amazon Simple Storage Service Developer Guide. Related actions include:     CreateJob     DescribeJob     UpdateJobPriority     UpdateJobStatus   
 
 # Required Parameters
-- `x-amz-account-id`: 
+- `x-amz-account-id`: The AWS account ID associated with the S3 Batch Operations job.
 
 # Optional Parameters
 - `jobStatuses`: The List Jobs request returns jobs that match the statuses listed in this element.
@@ -400,7 +400,7 @@ list_regional_buckets(x_amz_account_id, args::AbstractDict{String, <:Any}; aws_c
 """
     ListStorageLensConfigurations()
 
-Gets a list of Amazon S3 Storage Lens configurations. For more information about S3 Storage Lens, see Working with Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:ListStorageLensConfigurations action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
+Gets a list of Amazon S3 Storage Lens configurations. For more information about S3 Storage Lens, see Assessing your storage activity and usage with Amazon S3 Storage Lens  in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:ListStorageLensConfigurations action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
 
 # Required Parameters
 - `x-amz-account-id`: The account ID of the requester.
@@ -516,7 +516,7 @@ put_storage_lens_configuration(StorageLensConfiguration, storagelensid, x_amz_ac
 """
     PutStorageLensConfigurationTagging()
 
-Put or replace tags on an existing Amazon S3 Storage Lens configuration. For more information about S3 Storage Lens, see Working with Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:PutStorageLensConfigurationTagging action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
+Put or replace tags on an existing Amazon S3 Storage Lens configuration. For more information about S3 Storage Lens, see Assessing your storage activity and usage with Amazon S3 Storage Lens  in the Amazon Simple Storage Service Developer Guide.  To use this action, you must have permission to perform the s3:PutStorageLensConfigurationTagging action. For more information, see Setting permissions to use Amazon S3 Storage Lens in the Amazon Simple Storage Service Developer Guide. 
 
 # Required Parameters
 - `Tag`: The tag set of the S3 Storage Lens configuration.  You can set up to a maximum of 50 tags. 
@@ -537,7 +537,7 @@ Updates an existing S3 Batch Operations job's priority. For more information, se
 # Required Parameters
 - `id`: The ID for the job whose priority you want to update.
 - `priority`: The priority you want to assign to this job.
-- `x-amz-account-id`: 
+- `x-amz-account-id`: The AWS account ID associated with the S3 Batch Operations job.
 
 """
 update_job_priority(id, priority, x_amz_account_id; aws_config::AbstractAWSConfig=global_aws_config()) = s3_control("POST", "/v20180820/jobs/$(id)/priority", Dict{String, Any}("priority"=>priority, "headers"=>Dict{String, Any}("x-amz-account-id"=>x_amz_account_id)); aws_config=aws_config)
@@ -551,7 +551,7 @@ Updates the status for the specified job. Use this operation to confirm that you
 # Required Parameters
 - `id`: The ID of the job whose status you want to update.
 - `requestedJobStatus`: The status that you want to move the specified job to.
-- `x-amz-account-id`: 
+- `x-amz-account-id`: The AWS account ID associated with the S3 Batch Operations job.
 
 # Optional Parameters
 - `statusUpdateReason`: A description of the reason why you want to change the specified job's status. This field can be any string up to the maximum length.

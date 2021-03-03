@@ -20,7 +20,7 @@ associate_approved_origin(InstanceId, Origin, args::AbstractDict{String, <:Any};
 """
     AssociateInstanceStorageConfig()
 
-This API is in preview release for Amazon Connect and is subject to change. Associates a storage resource type for the first time. You can only associate one type of storage configuration in a single call. This means, for example, that you can't define an instance with multiple S3 buckets for storing chat transcripts. This API does not create a resource that doesn't exist. It only associates it to the instance. Ensure that the resource being specified in the storage configuration, like an Amazon S3 bucket, exists when being used for association.
+This API is in preview release for Amazon Connect and is subject to change. Associates a storage resource type for the first time. You can only associate one type of storage configuration in a single call. This means, for example, that you can't define an instance with multiple S3 buckets for storing chat transcripts. This API does not create a resource that doesn't exist. It only associates it to the instance. Ensure that the resource being specified in the storage configuration, like an S3 bucket, exists when being used for association.
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance.
@@ -56,6 +56,20 @@ This API is in preview release for Amazon Connect and is subject to change. Allo
 """
 associate_lex_bot(InstanceId, LexBot; aws_config::AbstractAWSConfig=global_aws_config()) = connect("PUT", "/instance/$(InstanceId)/lex-bot", Dict{String, Any}("LexBot"=>LexBot); aws_config=aws_config)
 associate_lex_bot(InstanceId, LexBot, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("PUT", "/instance/$(InstanceId)/lex-bot", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("LexBot"=>LexBot), args)); aws_config=aws_config)
+
+"""
+    AssociateQueueQuickConnects()
+
+This API is in preview release for Amazon Connect and is subject to change. Associates a set of quick connects with a queue.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+- `QuickConnectIds`: The quick connects to associate with this queue.
+
+"""
+associate_queue_quick_connects(InstanceId, QueueId, QuickConnectIds; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/associate-quick-connects", Dict{String, Any}("QuickConnectIds"=>QuickConnectIds); aws_config=aws_config)
+associate_queue_quick_connects(InstanceId, QueueId, QuickConnectIds, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/associate-quick-connects", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("QuickConnectIds"=>QuickConnectIds), args)); aws_config=aws_config)
 
 """
     AssociateRoutingProfileQueues()
@@ -105,12 +119,12 @@ create_contact_flow(Content, InstanceId, Name, Type, args::AbstractDict{String, 
 """
     CreateInstance()
 
-This API is in preview release for Amazon Connect and is subject to change. Initiates an Amazon Connect instance with all the supported channels enabled. It does not attach any storage (such as Amazon S3, or Kinesis) or allow for any configurations on features such as Contact Lens for Amazon Connect. 
+This API is in preview release for Amazon Connect and is subject to change. Initiates an Amazon Connect instance with all the supported channels enabled. It does not attach any storage, such as Amazon Simple Storage Service (Amazon S3) or Amazon Kinesis. It also does not allow for any configurations on features, such as Contact Lens for Amazon Connect. 
 
 # Required Parameters
 - `IdentityManagementType`: The type of identity management for your Amazon Connect users.
-- `InboundCallsEnabled`: Whether your contact center handles incoming contacts.
-- `OutboundCallsEnabled`: Whether your contact center allows outbound calls.
+- `InboundCallsEnabled`: Your contact center handles incoming contacts.
+- `OutboundCallsEnabled`: Your contact center allows outbound calls.
 
 # Optional Parameters
 - `ClientToken`: The idempotency token.
@@ -138,6 +152,26 @@ create_integration_association(InstanceId, IntegrationArn, IntegrationType, Sour
 create_integration_association(InstanceId, IntegrationArn, IntegrationType, SourceApplicationName, SourceApplicationUrl, SourceType, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("PUT", "/instance/$(InstanceId)/integration-associations", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("IntegrationArn"=>IntegrationArn, "IntegrationType"=>IntegrationType, "SourceApplicationName"=>SourceApplicationName, "SourceApplicationUrl"=>SourceApplicationUrl, "SourceType"=>SourceType), args)); aws_config=aws_config)
 
 """
+    CreateQueue()
+
+This API is in preview release for Amazon Connect and is subject to change. Creates a new queue for the specified Amazon Connect instance.
+
+# Required Parameters
+- `HoursOfOperationId`: The identifier for the hours of operation.
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `Name`: The name of the queue.
+
+# Optional Parameters
+- `Description`: The description of the queue.
+- `MaxContacts`: The maximum number of contacts that can be in the queue before it is considered full.
+- `OutboundCallerConfig`: The outbound caller ID name, number, and outbound whisper flow.
+- `QuickConnectIds`: The quick connects available to agents who are working the queue.
+- `Tags`: One or more tags.
+"""
+create_queue(HoursOfOperationId, InstanceId, Name; aws_config::AbstractAWSConfig=global_aws_config()) = connect("PUT", "/queues/$(InstanceId)", Dict{String, Any}("HoursOfOperationId"=>HoursOfOperationId, "Name"=>Name); aws_config=aws_config)
+create_queue(HoursOfOperationId, InstanceId, Name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("PUT", "/queues/$(InstanceId)", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("HoursOfOperationId"=>HoursOfOperationId, "Name"=>Name), args)); aws_config=aws_config)
+
+"""
     CreateQuickConnect()
 
 This API is in preview release for Amazon Connect and is subject to change. Creates a quick connect for the specified Amazon Connect instance.
@@ -163,11 +197,11 @@ Creates a new routing profile.
 - `DefaultOutboundQueueId`: The default outbound queue for the routing profile.
 - `Description`: Description of the routing profile. Must not be more than 250 characters.
 - `InstanceId`: The identifier of the Amazon Connect instance.
-- `MediaConcurrencies`: The channels agents can handle in the Contact Control Panel (CCP) for this routing profile.
+- `MediaConcurrencies`: The channels that agents can handle in the Contact Control Panel (CCP) for this routing profile.
 - `Name`: The name of the routing profile. Must not be more than 127 characters.
 
 # Optional Parameters
-- `QueueConfigs`: The inbound queues associated with the routing profile. If no queue is added, the agent can only make outbound calls.
+- `QueueConfigs`: The inbound queues associated with the routing profile. If no queue is added, the agent can make only outbound calls.
 - `Tags`: One or more tags.
 """
 create_routing_profile(DefaultOutboundQueueId, Description, InstanceId, MediaConcurrencies, Name; aws_config::AbstractAWSConfig=global_aws_config()) = connect("PUT", "/routing-profiles/$(InstanceId)", Dict{String, Any}("DefaultOutboundQueueId"=>DefaultOutboundQueueId, "Description"=>Description, "MediaConcurrencies"=>MediaConcurrencies, "Name"=>Name); aws_config=aws_config)
@@ -316,9 +350,22 @@ describe_contact_flow(ContactFlowId, InstanceId; aws_config::AbstractAWSConfig=g
 describe_contact_flow(ContactFlowId, InstanceId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/contact-flows/$(InstanceId)/$(ContactFlowId)", args; aws_config=aws_config)
 
 """
+    DescribeHoursOfOperation()
+
+This API is in preview release for Amazon Connect and is subject to change. Describes the hours of operation.
+
+# Required Parameters
+- `HoursOfOperationId`: The identifier for the hours of operation.
+- `InstanceId`: The identifier of the Amazon Connect instance.
+
+"""
+describe_hours_of_operation(HoursOfOperationId, InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/hours-of-operations/$(InstanceId)/$(HoursOfOperationId)"; aws_config=aws_config)
+describe_hours_of_operation(HoursOfOperationId, InstanceId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/hours-of-operations/$(InstanceId)/$(HoursOfOperationId)", args; aws_config=aws_config)
+
+"""
     DescribeInstance()
 
-This API is in preview release for Amazon Connect and is subject to change. Returns the current state of the specified instance identifier. It tracks the instance while it is being created and returns an error status if applicable.  If an instance is not created successfully, the instance status reason field returns details relevant to the reason. The instance in a failed state is returned only for 24 hours after the CreateInstance API was invoked.
+This API is in preview release for Amazon Connect and is subject to change. Returns the current state of the specified instance identifier. It tracks the instance while it is being created and returns an error status, if applicable.  If an instance is not created successfully, the instance status reason field returns details relevant to the reason. The instance in a failed state is returned only for 24 hours after the CreateInstance API was invoked.
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance.
@@ -353,6 +400,19 @@ This API is in preview release for Amazon Connect and is subject to change. Retr
 """
 describe_instance_storage_config(AssociationId, InstanceId, resourceType; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/storage-config/$(AssociationId)", Dict{String, Any}("resourceType"=>resourceType); aws_config=aws_config)
 describe_instance_storage_config(AssociationId, InstanceId, resourceType, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/storage-config/$(AssociationId)", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("resourceType"=>resourceType), args)); aws_config=aws_config)
+
+"""
+    DescribeQueue()
+
+This API is in preview release for Amazon Connect and is subject to change. Describes the specified queue.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+
+"""
+describe_queue(InstanceId, QueueId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/queues/$(InstanceId)/$(QueueId)"; aws_config=aws_config)
+describe_queue(InstanceId, QueueId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/queues/$(InstanceId)/$(QueueId)", args; aws_config=aws_config)
 
 """
     DescribeQuickConnect()
@@ -448,7 +508,7 @@ disassociate_instance_storage_config(AssociationId, InstanceId, resourceType, ar
 """
     DisassociateLambdaFunction()
 
-This API is in preview release for Amazon Connect and is subject to change. Remove the Lambda function from the drop-down options available in the relevant contact flow blocks.
+This API is in preview release for Amazon Connect and is subject to change. Remove the Lambda function from the dropdown options available in the relevant contact flow blocks.
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance..
@@ -471,6 +531,20 @@ This API is in preview release for Amazon Connect and is subject to change. Revo
 """
 disassociate_lex_bot(InstanceId, botName, lexRegion; aws_config::AbstractAWSConfig=global_aws_config()) = connect("DELETE", "/instance/$(InstanceId)/lex-bot", Dict{String, Any}("botName"=>botName, "lexRegion"=>lexRegion); aws_config=aws_config)
 disassociate_lex_bot(InstanceId, botName, lexRegion, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("DELETE", "/instance/$(InstanceId)/lex-bot", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("botName"=>botName, "lexRegion"=>lexRegion), args)); aws_config=aws_config)
+
+"""
+    DisassociateQueueQuickConnects()
+
+This API is in preview release for Amazon Connect and is subject to change. Disassociates a set of quick connects from a queue.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+- `QuickConnectIds`: The quick connects to disassociate from the queue.
+
+"""
+disassociate_queue_quick_connects(InstanceId, QueueId, QuickConnectIds; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/disassociate-quick-connects", Dict{String, Any}("QuickConnectIds"=>QuickConnectIds); aws_config=aws_config)
+disassociate_queue_quick_connects(InstanceId, QueueId, QuickConnectIds, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/disassociate-quick-connects", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("QuickConnectIds"=>QuickConnectIds), args)); aws_config=aws_config)
 
 """
     DisassociateRoutingProfileQueues()
@@ -524,7 +598,7 @@ Gets the real-time metric data from the specified Amazon Connect instance. For a
 
 # Optional Parameters
 - `Groupings`: The grouping applied to the metrics returned. For example, when grouped by QUEUE, the metrics returned apply to each queue rather than aggregated for all queues. If you group by CHANNEL, you should include a Channels filter. VOICE, CHAT, and TASK channels are supported. If no Grouping is included in the request, a summary of metrics is returned.
-- `MaxResults`: The maximimum number of results to return per page.
+- `MaxResults`: The maximum number of results to return per page.
 - `NextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results. The token expires after 5 minutes from the time it is created. Subsequent requests that use the token must use the same request parameters as the request that generated the token.
 """
 get_current_metric_data(CurrentMetrics, Filters, InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/metrics/current/$(InstanceId)", Dict{String, Any}("CurrentMetrics"=>CurrentMetrics, "Filters"=>Filters); aws_config=aws_config)
@@ -556,7 +630,7 @@ Gets historical metric data from the specified Amazon Connect instance. For a de
 
 # Optional Parameters
 - `Groupings`: The grouping applied to the metrics returned. For example, when results are grouped by queue, the metrics returned are grouped by queue. The values returned apply to the metrics for each queue rather than aggregated for all queues. The only supported grouping is QUEUE. If no grouping is specified, a summary of metrics for all queues is returned.
-- `MaxResults`: The maximimum number of results to return per page.
+- `MaxResults`: The maximum number of results to return per page.
 - `NextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 get_metric_data(EndTime, Filters, HistoricalMetrics, InstanceId, StartTime; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/metrics/historical/$(InstanceId)", Dict{String, Any}("EndTime"=>EndTime, "Filters"=>Filters, "HistoricalMetrics"=>HistoricalMetrics, "StartTime"=>StartTime); aws_config=aws_config)
@@ -571,7 +645,7 @@ This API is in preview release for Amazon Connect and is subject to change. Retu
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_approved_origins(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/approved-origins"; aws_config=aws_config)
@@ -587,7 +661,7 @@ Provides information about the contact flows for the specified Amazon Connect in
 
 # Optional Parameters
 - `contactFlowTypes`: The type of contact flow.
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_contact_flows(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/contact-flows-summary/$(InstanceId)"; aws_config=aws_config)
@@ -602,7 +676,7 @@ Provides information about the hours of operation for the specified Amazon Conne
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_hours_of_operations(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/hours-of-operations-summary/$(InstanceId)"; aws_config=aws_config)
@@ -617,7 +691,7 @@ This API is in preview release for Amazon Connect and is subject to change. Retu
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_instance_attributes(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/attributes"; aws_config=aws_config)
@@ -633,7 +707,7 @@ This API is in preview release for Amazon Connect and is subject to change. Retu
 - `resourceType`: A valid resource type.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_instance_storage_configs(InstanceId, resourceType; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/storage-configs", Dict{String, Any}("resourceType"=>resourceType); aws_config=aws_config)
@@ -645,7 +719,7 @@ list_instance_storage_configs(InstanceId, resourceType, args::AbstractDict{Strin
 This API is in preview release for Amazon Connect and is subject to change. Return a list of instances which are in active state, creation-in-progress state, and failed state. Instances that aren't successfully created (they are in a failed state) are returned only for 24 hours after the CreateInstance API was invoked.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_instances(; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance"; aws_config=aws_config)
@@ -660,7 +734,7 @@ This API is in preview release for Amazon Connect and is subject to change. Prov
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_integration_associations(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/integration-associations"; aws_config=aws_config)
@@ -669,13 +743,13 @@ list_integration_associations(InstanceId, args::AbstractDict{String, <:Any}; aws
 """
     ListLambdaFunctions()
 
-This API is in preview release for Amazon Connect and is subject to change. Returns a paginated list of all the Lambda functions that show up in the drop-down options in the relevant contact flow blocks.
+This API is in preview release for Amazon Connect and is subject to change. Returns a paginated list of all Lambda functions that display in the dropdown options in the relevant contact flow blocks.
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_lambda_functions(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/lambda-functions"; aws_config=aws_config)
@@ -690,7 +764,7 @@ This API is in preview release for Amazon Connect and is subject to change. Retu
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_lex_bots(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/lex-bots"; aws_config=aws_config)
@@ -705,7 +779,7 @@ Provides information about the phone numbers for the specified Amazon Connect in
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 - `phoneNumberCountryCodes`: The ISO country code.
 - `phoneNumberTypes`: The type of phone number.
@@ -729,6 +803,22 @@ list_prompts(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = co
 list_prompts(InstanceId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/prompts-summary/$(InstanceId)", args; aws_config=aws_config)
 
 """
+    ListQueueQuickConnects()
+
+This API is in preview release for Amazon Connect and is subject to change. Lists the quick connects associated with a queue.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+
+# Optional Parameters
+- `maxResults`: The maximum number of results to return per page.
+- `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
+"""
+list_queue_quick_connects(InstanceId, QueueId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/queues/$(InstanceId)/$(QueueId)/quick-connects"; aws_config=aws_config)
+list_queue_quick_connects(InstanceId, QueueId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/queues/$(InstanceId)/$(QueueId)/quick-connects", args; aws_config=aws_config)
+
+"""
     ListQueues()
 
 Provides information about the queues for the specified Amazon Connect instance. For more information about queues, see Queues: Standard and Agent in the Amazon Connect Administrator Guide.
@@ -737,7 +827,7 @@ Provides information about the queues for the specified Amazon Connect instance.
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 - `queueTypes`: The type of queue.
 """
@@ -754,7 +844,7 @@ This API is in preview release for Amazon Connect and is subject to change. Prov
 
 # Optional Parameters
 - `QuickConnectTypes`: The type of quick connect. In the Amazon Connect console, when you create a quick connect, you are prompted to assign one of the following types: Agent (USER), External (PHONE_NUMBER), or Queue (QUEUE).
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_quick_connects(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/quick-connects/$(InstanceId)"; aws_config=aws_config)
@@ -763,14 +853,14 @@ list_quick_connects(InstanceId, args::AbstractDict{String, <:Any}; aws_config::A
 """
     ListRoutingProfileQueues()
 
-List the queues associated with a routing profile.
+Lists the queues associated with a routing profile.
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance.
 - `RoutingProfileId`: The identifier of the routing profile.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_routing_profile_queues(InstanceId, RoutingProfileId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/routing-profiles/$(InstanceId)/$(RoutingProfileId)/queues"; aws_config=aws_config)
@@ -785,7 +875,7 @@ Provides summary information about the routing profiles for the specified Amazon
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_routing_profiles(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/routing-profiles-summary/$(InstanceId)"; aws_config=aws_config)
@@ -800,7 +890,7 @@ This API is in preview release for Amazon Connect and is subject to change. Retu
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_security_keys(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/security-keys"; aws_config=aws_config)
@@ -815,7 +905,7 @@ Provides summary information about the security profiles for the specified Amazo
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_security_profiles(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/security-profiles-summary/$(InstanceId)"; aws_config=aws_config)
@@ -836,14 +926,14 @@ list_tags_for_resource(resourceArn, args::AbstractDict{String, <:Any}; aws_confi
 """
     ListUseCases()
 
-This API is in preview release for Amazon Connect and is subject to change. List the use cases. 
+This API is in preview release for Amazon Connect and is subject to change. Lists the use cases. 
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance.
 - `IntegrationAssociationId`: The identifier for the integration association.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_use_cases(InstanceId, IntegrationAssociationId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/instance/$(InstanceId)/integration-associations/$(IntegrationAssociationId)/use-cases"; aws_config=aws_config)
@@ -858,7 +948,7 @@ Provides summary information about the hierarchy groups for the specified Amazon
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_user_hierarchy_groups(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/user-hierarchy-groups-summary/$(InstanceId)"; aws_config=aws_config)
@@ -873,7 +963,7 @@ Provides summary information about the users for the specified Amazon Connect in
 - `InstanceId`: The identifier of the Amazon Connect instance.
 
 # Optional Parameters
-- `maxResults`: The maximimum number of results to return per page.
+- `maxResults`: The maximum number of results to return per page.
 - `nextToken`: The token for the next set of results. Use the value returned in the previous response in the next request to retrieve the next set of results.
 """
 list_users(InstanceId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("GET", "/users-summary/$(InstanceId)"; aws_config=aws_config)
@@ -896,7 +986,7 @@ resume_contact_recording(ContactId, InitialContactId, InstanceId, args::Abstract
 """
     StartChatContact()
 
-Initiates a contact flow to start a new chat for the customer. Response of this API provides a token required to obtain credentials from the CreateParticipantConnection API in the Amazon Connect Participant Service. When a new chat contact is successfully created, clients need to subscribe to the participant’s connection for the created chat within 5 minutes. This is achieved by invoking CreateParticipantConnection with WEBSOCKET and CONNECTION_CREDENTIALS.  A 429 error occurs in two situations:   API rate limit is exceeded. API TPS throttling returns a TooManyRequests exception from the API Gateway.   The quota for concurrent active chats is exceeded. Active chat throttling returns a LimitExceededException.   For more information about how chat works, see Chat in the Amazon Connect Administrator Guide.
+Initiates a contact flow to start a new chat for the customer. Response of this API provides a token required to obtain credentials from the CreateParticipantConnection API in the Amazon Connect Participant Service. When a new chat contact is successfully created, clients must subscribe to the participant’s connection for the created chat within 5 minutes. This is achieved by invoking CreateParticipantConnection with WEBSOCKET and CONNECTION_CREDENTIALS.  A 429 error occurs in two situations:   API rate limit is exceeded. API TPS throttling returns a TooManyRequests exception from the API Gateway.   The quota for concurrent active chats is exceeded. Active chat throttling returns a LimitExceededException.   For more information about chat, see Chat in the Amazon Connect Administrator Guide.
 
 # Required Parameters
 - `ContactFlowId`: The identifier of the contact flow for initiating the chat. To see the ContactFlowId in the Amazon Connect console user interface, on the navigation menu go to Routing, Contact Flows. Choose the contact flow. On the contact flow page, under the name of the contact flow, choose Show additional flow information. The ContactFlowId is the last part of the ARN, shown here in bold:  arn:aws:connect:us-west-2:xxxxxxxxxxxx:instance/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/contact-flow/846ec553-a005-41c0-8341-xxxxxxxxxxxx 
@@ -904,7 +994,7 @@ Initiates a contact flow to start a new chat for the customer. Response of this 
 - `ParticipantDetails`: Information identifying the participant.
 
 # Optional Parameters
-- `Attributes`: A custom key-value pair using an attribute map. The attributes are standard Amazon Connect attributes, and can be accessed in contact flows just like any other contact attributes.  There can be up to 32,768 UTF-8 bytes across all key-value pairs per contact. Attribute keys can include only alphanumeric, dash, and underscore characters.
+- `Attributes`: A custom key-value pair using an attribute map. The attributes are standard Amazon Connect attributes. They can be accessed in contact flows just like any other contact attributes.  There can be up to 32,768 UTF-8 bytes across all key-value pairs per contact. Attribute keys can include only alphanumeric, dash, and underscore characters.
 - `ClientToken`: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
 - `InitialMessage`: The initial message to be sent to the newly created chat.
 """
@@ -914,13 +1004,13 @@ start_chat_contact(ContactFlowId, InstanceId, ParticipantDetails, args::Abstract
 """
     StartContactRecording()
 
-This API starts recording the contact when the agent joins the call. StartContactRecording is a one-time action. For example, if you use StopContactRecording to stop recording an ongoing call, you can't use StartContactRecording to restart it. For scenarios where the recording has started and you want to suspend and resume it, such as when collecting sensitive information (for example, a credit card number), use SuspendContactRecording and ResumeContactRecording. You can use this API to override the recording behavior configured in the Set recording behavior block. Only voice recordings are supported at this time.
+Starts recording the contact when the agent joins the call. StartContactRecording is a one-time action. For example, if you use StopContactRecording to stop recording an ongoing call, you can't use StartContactRecording to restart it. For scenarios where the recording has started and you want to suspend and resume it, such as when collecting sensitive information (for example, a credit card number), use SuspendContactRecording and ResumeContactRecording. You can use this API to override the recording behavior configured in the Set recording behavior block. Only voice recordings are supported at this time.
 
 # Required Parameters
 - `ContactId`: The identifier of the contact.
 - `InitialContactId`: The identifier of the contact. This is the identifier of the contact associated with the first interaction with the contact center.
 - `InstanceId`: The identifier of the Amazon Connect instance.
-- `VoiceRecordingConfiguration`: Who is being recorded.
+- `VoiceRecordingConfiguration`: The person being recorded.
 
 """
 start_contact_recording(ContactId, InitialContactId, InstanceId, VoiceRecordingConfiguration; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/contact/start-recording", Dict{String, Any}("ContactId"=>ContactId, "InitialContactId"=>InitialContactId, "InstanceId"=>InstanceId, "VoiceRecordingConfiguration"=>VoiceRecordingConfiguration); aws_config=aws_config)
@@ -929,7 +1019,7 @@ start_contact_recording(ContactId, InitialContactId, InstanceId, VoiceRecordingC
 """
     StartOutboundVoiceContact()
 
-This API places an outbound call to a contact, and then initiates the contact flow. It performs the actions in the contact flow that's specified (in ContactFlowId). Agents are not involved in initiating the outbound API (that is, dialing the contact). If the contact flow places an outbound call to a contact, and then puts the contact in queue, that's when the call is routed to the agent, like any other inbound case. There is a 60 second dialing timeout for this operation. If the call is not connected after 60 seconds, it fails.  UK numbers with a 447 prefix are not allowed by default. Before you can dial these UK mobile numbers, you must submit a service quota increase request. For more information, see Amazon Connect Service Quotas in the Amazon Connect Administrator Guide.  
+Places an outbound call to a contact, and then initiates the contact flow. It performs the actions in the contact flow that's specified (in ContactFlowId). Agents do not initiate the outbound API, which means that they do not dial the contact. If the contact flow places an outbound call to a contact, and then puts the contact in queue, the call is then routed to the agent, like any other inbound case. There is a 60-second dialing timeout for this operation. If the call is not connected after 60 seconds, it fails.  UK numbers with a 447 prefix are not allowed by default. Before you can dial these UK mobile numbers, you must submit a service quota increase request. For more information, see Amazon Connect Service Quotas in the Amazon Connect Administrator Guide.  
 
 # Required Parameters
 - `ContactFlowId`: The identifier of the contact flow for the outbound call. To see the ContactFlowId in the Amazon Connect console user interface, on the navigation menu go to Routing, Contact Flows. Choose the contact flow. On the contact flow page, under the name of the contact flow, choose Show additional flow information. The ContactFlowId is the last part of the ARN, shown here in bold:  arn:aws:connect:us-west-2:xxxxxxxxxxxx:instance/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/contact-flow/846ec553-a005-41c0-8341-xxxxxxxxxxxx 
@@ -981,7 +1071,7 @@ stop_contact(ContactId, InstanceId, args::AbstractDict{String, <:Any}; aws_confi
 """
     StopContactRecording()
 
-When a contact is being recorded, this API stops recording the call. StopContactRecording is a one-time action. If you use StopContactRecording to stop recording an ongoing call, you can't use StartContactRecording to restart it. For scenarios where the recording has started and you want to suspend it for sensitive information (for example, to collect a credit card number), and then restart it, use SuspendContactRecording and ResumeContactRecording. Only voice recordings are supported at this time.
+Stops recording a call when a contact is being recorded. StopContactRecording is a one-time action. If you use StopContactRecording to stop recording an ongoing call, you can't use StartContactRecording to restart it. For scenarios where the recording has started and you want to suspend it for sensitive information (for example, to collect a credit card number), and then restart it, use SuspendContactRecording and ResumeContactRecording. Only voice recordings are supported at this time.
 
 # Required Parameters
 - `ContactId`: The identifier of the contact.
@@ -1009,7 +1099,7 @@ suspend_contact_recording(ContactId, InitialContactId, InstanceId, args::Abstrac
 """
     TagResource()
 
-Adds the specified tags to the specified resource. The supported resource types are users, routing profiles, quick connects, and contact flows. For sample policies that use tags, see Amazon Connect Identity-Based Policy Examples in the Amazon Connect Administrator Guide.
+Adds the specified tags to the specified resource. The supported resource types are users, routing profiles, queues, quick connects, and contact flows. For sample policies that use tags, see Amazon Connect Identity-Based Policy Examples in the Amazon Connect Administrator Guide.
 
 # Required Parameters
 - `resourceArn`: The Amazon Resource Name (ARN) of the resource.
@@ -1035,7 +1125,7 @@ untag_resource(resourceArn, tagKeys, args::AbstractDict{String, <:Any}; aws_conf
 """
     UpdateContactAttributes()
 
-Creates or updates the contact attributes associated with the specified contact. You can add or update attributes for both ongoing and completed contacts. For example, you can update the customer's name or the reason the customer called while the call is active, or add notes about steps that the agent took during the call that are displayed to the next agent that takes the call. You can also update attributes for a contact using data from your CRM application and save the data with the contact in Amazon Connect. You could also flag calls for additional analysis, such as legal review or identifying abusive callers. Contact attributes are available in Amazon Connect for 24 months, and are then deleted.  Important: You cannot use the operation to update attributes for contacts that occurred prior to the release of the API, September 12, 2018. You can update attributes only for contacts that started after the release of the API. If you attempt to update attributes for a contact that occurred prior to the release of the API, a 400 error is returned. This applies also to queued callbacks that were initiated prior to the release of the API but are still active in your instance.
+Creates or updates the contact attributes associated with the specified contact. You can add or update attributes for both ongoing and completed contacts. For example, while the call is active, you can update the customer's name or the reason the customer called. You can add notes about steps that the agent took during the call that display to the next agent that takes the call. You can also update attributes for a contact using data from your CRM application and save the data with the contact in Amazon Connect. You could also flag calls for additional analysis, such as legal review or to identify abusive callers. Contact attributes are available in Amazon Connect for 24 months, and are then deleted.  Important: You cannot use the operation to update attributes for contacts that occurred prior to the release of the API, which was September 12, 2018. You can update attributes only for contacts that started after the release of the API. If you attempt to update attributes for a contact that occurred prior to the release of the API, a 400 error is returned. This applies also to queued callbacks that were initiated prior to the release of the API but are still active in your instance.
 
 # Required Parameters
 - `Attributes`: The Amazon Connect attributes. These attributes can be accessed in contact flows just like any other contact attributes. You can have up to 32,768 UTF-8 bytes across all attributes for a contact. Attribute keys can include only alphanumeric, dash, and underscore characters.
@@ -1106,6 +1196,78 @@ update_instance_storage_config(AssociationId, InstanceId, StorageConfig, resourc
 update_instance_storage_config(AssociationId, InstanceId, StorageConfig, resourceType, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/instance/$(InstanceId)/storage-config/$(AssociationId)", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("StorageConfig"=>StorageConfig, "resourceType"=>resourceType), args)); aws_config=aws_config)
 
 """
+    UpdateQueueHoursOfOperation()
+
+This API is in preview release for Amazon Connect and is subject to change. Updates the hours of operation for the specified queue.
+
+# Required Parameters
+- `HoursOfOperationId`: The identifier for the hours of operation.
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+
+"""
+update_queue_hours_of_operation(HoursOfOperationId, InstanceId, QueueId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/hours-of-operation", Dict{String, Any}("HoursOfOperationId"=>HoursOfOperationId); aws_config=aws_config)
+update_queue_hours_of_operation(HoursOfOperationId, InstanceId, QueueId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/hours-of-operation", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("HoursOfOperationId"=>HoursOfOperationId), args)); aws_config=aws_config)
+
+"""
+    UpdateQueueMaxContacts()
+
+This API is in preview release for Amazon Connect and is subject to change. Updates the maximum number of contacts allowed in a queue before it is considered full.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `MaxContacts`: The maximum number of contacts that can be in the queue before it is considered full.
+- `QueueId`: The identifier for the queue.
+
+"""
+update_queue_max_contacts(InstanceId, MaxContacts, QueueId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/max-contacts", Dict{String, Any}("MaxContacts"=>MaxContacts); aws_config=aws_config)
+update_queue_max_contacts(InstanceId, MaxContacts, QueueId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/max-contacts", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("MaxContacts"=>MaxContacts), args)); aws_config=aws_config)
+
+"""
+    UpdateQueueName()
+
+This API is in preview release for Amazon Connect and is subject to change. Updates the name and description of a queue. At least Name or Description must be provided.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+
+# Optional Parameters
+- `Description`: The description of the queue.
+- `Name`: The name of the queue.
+"""
+update_queue_name(InstanceId, QueueId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/name"; aws_config=aws_config)
+update_queue_name(InstanceId, QueueId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/name", args; aws_config=aws_config)
+
+"""
+    UpdateQueueOutboundCallerConfig()
+
+This API is in preview release for Amazon Connect and is subject to change. Updates the outbound caller ID name, number, and outbound whisper flow for a specified queue.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `OutboundCallerConfig`: The outbound caller ID name, number, and outbound whisper flow.
+- `QueueId`: The identifier for the queue.
+
+"""
+update_queue_outbound_caller_config(InstanceId, OutboundCallerConfig, QueueId; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/outbound-caller-config", Dict{String, Any}("OutboundCallerConfig"=>OutboundCallerConfig); aws_config=aws_config)
+update_queue_outbound_caller_config(InstanceId, OutboundCallerConfig, QueueId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/outbound-caller-config", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("OutboundCallerConfig"=>OutboundCallerConfig), args)); aws_config=aws_config)
+
+"""
+    UpdateQueueStatus()
+
+This API is in preview release for Amazon Connect and is subject to change. Updates the status of the queue.
+
+# Required Parameters
+- `InstanceId`: The identifier of the Amazon Connect instance.
+- `QueueId`: The identifier for the queue.
+- `Status`: The status of the queue.
+
+"""
+update_queue_status(InstanceId, QueueId, Status; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/status", Dict{String, Any}("Status"=>Status); aws_config=aws_config)
+update_queue_status(InstanceId, QueueId, Status, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = connect("POST", "/queues/$(InstanceId)/$(QueueId)/status", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("Status"=>Status), args)); aws_config=aws_config)
+
+"""
     UpdateQuickConnectConfig()
 
 This API is in preview release for Amazon Connect and is subject to change. Updates the configuration settings for the specified quick connect.
@@ -1142,7 +1304,7 @@ Updates the channels that agents can handle in the Contact Control Panel (CCP) f
 
 # Required Parameters
 - `InstanceId`: The identifier of the Amazon Connect instance.
-- `MediaConcurrencies`: The channels agents can handle in the Contact Control Panel (CCP).
+- `MediaConcurrencies`: The channels that agents can handle in the Contact Control Panel (CCP).
 - `RoutingProfileId`: The identifier of the routing profile.
 
 """
@@ -1238,7 +1400,7 @@ update_user_hierarchy_structure(HierarchyStructure, InstanceId, args::AbstractDi
 """
     UpdateUserIdentityInfo()
 
-Updates the identity information for the specified user.  Someone with the ability to invoke UpdateUserIndentityInfo can change the login credentials of other users by changing their email address. This poses a security risk to your organization. They can change the email address of a user to the attacker's email address, and then reset the password through email. We strongly recommend limiting who has the ability to invoke UpdateUserIndentityInfo. For more information, see Best Practices for Security Profiles in the Amazon Connect Administrator Guide. 
+Updates the identity information for the specified user.  We strongly recommend limiting who has the ability to invoke UpdateUserIdentityInfo. Someone with that ability can change the login credentials of other users by changing their email address. This poses a security risk to your organization. They can change the email address of a user to the attacker's email address, and then reset the password through email. For more information, see Best Practices for Security Profiles in the Amazon Connect Administrator Guide. 
 
 # Required Parameters
 - `IdentityInfo`: The identity information for the user.

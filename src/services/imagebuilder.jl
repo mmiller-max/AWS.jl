@@ -488,6 +488,21 @@ list_image_build_versions(imageVersionArn; aws_config::AbstractAWSConfig=global_
 list_image_build_versions(imageVersionArn, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = imagebuilder("POST", "/ListImageBuildVersions", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("imageVersionArn"=>imageVersionArn), args)); aws_config=aws_config)
 
 """
+    ListImagePackages()
+
+List the Packages that are associated with an Image Build Version, as determined by AWS Systems Manager Inventory at build time.
+
+# Required Parameters
+- `imageBuildVersionArn`: Filter results for the ListImagePackages request by the Image Build Version ARN
+
+# Optional Parameters
+- `maxResults`: The maxiumum number of results to return from the ListImagePackages request.
+- `nextToken`: A token to specify where to start paginating. This is the NextToken from a previously truncated response.
+"""
+list_image_packages(imageBuildVersionArn; aws_config::AbstractAWSConfig=global_aws_config()) = imagebuilder("POST", "/ListImagePackages", Dict{String, Any}("imageBuildVersionArn"=>imageBuildVersionArn); aws_config=aws_config)
+list_image_packages(imageBuildVersionArn, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = imagebuilder("POST", "/ListImagePackages", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("imageBuildVersionArn"=>imageBuildVersionArn), args)); aws_config=aws_config)
+
+"""
     ListImagePipelineImages()
 
  Returns a list of images created by the specified pipeline. 

@@ -91,6 +91,7 @@ Creates a dataset.
 # Optional Parameters
 - `ColumnGroups`: Groupings of columns that work together in certain QuickSight features. Currently, only geospatial hierarchy is supported.
 - `ColumnLevelPermissionRules`: A set of one or more definitions of a  ColumnLevelPermissionRule .
+- `FieldFolders`: The folder that contains fields and nested subfolders for your dataset.
 - `LogicalTableMap`: Configures the combination and transformation of the data from the physical tables.
 - `Permissions`: A list of resource permissions on the dataset.
 - `RowLevelPermissionDataSet`: The row-level security configuration for the data that you want to create.
@@ -108,7 +109,7 @@ Creates a data source.
 - `AwsAccountId`: The AWS account ID.
 - `DataSourceId`: An ID for the data source. This ID is unique per AWS Region for each AWS account. 
 - `Name`: A display name for the data source.
-- `Type`: The type of the data source. Currently, the supported types for this operation are: ATHENA, AURORA, AURORA_POSTGRESQL, MARIADB, MYSQL, POSTGRESQL, PRESTO, REDSHIFT, S3, SNOWFLAKE, SPARK, SQLSERVER, TERADATA. Use ListDataSources to return a list of all data sources.
+- `Type`: The type of the data source. Currently, the supported types for this operation are: ATHENA, AURORA, AURORA_POSTGRESQL, AMAZON_ELASTICSEARCH, MARIADB, MYSQL, POSTGRESQL, PRESTO, REDSHIFT, S3, SNOWFLAKE, SPARK, SQLSERVER, TERADATA. Use ListDataSources to return a list of all data sources.  AMAZON_ELASTICSEARCH is for Amazon managed Elasticsearch Service.
 
 # Optional Parameters
 - `Credentials`: The credentials QuickSight that uses to connect to your underlying source. Currently, only credentials based on user name and password are supported.
@@ -1344,6 +1345,7 @@ Updates a dataset.
 # Optional Parameters
 - `ColumnGroups`: Groupings of columns that work together in certain QuickSight features. Currently, only geospatial hierarchy is supported.
 - `ColumnLevelPermissionRules`: A set of one or more definitions of a  ColumnLevelPermissionRule .
+- `FieldFolders`: The folder that contains fields and nested subfolders for your dataset.
 - `LogicalTableMap`: Configures the combination and transformation of the data from the physical tables.
 - `RowLevelPermissionDataSet`: The row-level security configuration for the data you want to create.
 """

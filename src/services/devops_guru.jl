@@ -52,6 +52,17 @@ describe_anomaly(Id; aws_config::AbstractAWSConfig=global_aws_config()) = devops
 describe_anomaly(Id, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = devops_guru("GET", "/anomalies/$(Id)", args; aws_config=aws_config)
 
 """
+    DescribeFeedback()
+
+ Returns the most recent feedback submitted in the current AWS account and Region. 
+
+# Optional Parameters
+- `InsightId`:  The ID of the insight for which the feedback was provided. 
+"""
+describe_feedback(; aws_config::AbstractAWSConfig=global_aws_config()) = devops_guru("POST", "/feedback"; aws_config=aws_config)
+describe_feedback(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = devops_guru("POST", "/feedback", args; aws_config=aws_config)
+
+"""
     DescribeInsight()
 
  Returns details about an insight that you specify using its ID. 

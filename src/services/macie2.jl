@@ -11,11 +11,13 @@ Accepts an Amazon Macie membership invitation that was received from a specific 
 
 # Required Parameters
 - `invitationId`: The unique identifier for the invitation to accept.
-- `masterAccount`: The AWS account ID for the account that sent the invitation.
 
+# Optional Parameters
+- `administratorAccountId`: The AWS account ID for the account that sent the invitation.
+- `masterAccount`: (Deprecated) The AWS account ID for the account that sent the invitation. This property has been replaced by the administratorAccountId property and is retained only for backward compatibility.
 """
-accept_invitation(invitationId, masterAccount; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/invitations/accept", Dict{String, Any}("invitationId"=>invitationId, "masterAccount"=>masterAccount); aws_config=aws_config)
-accept_invitation(invitationId, masterAccount, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/invitations/accept", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("invitationId"=>invitationId, "masterAccount"=>masterAccount), args)); aws_config=aws_config)
+accept_invitation(invitationId; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/invitations/accept", Dict{String, Any}("invitationId"=>invitationId); aws_config=aws_config)
+accept_invitation(invitationId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/invitations/accept", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("invitationId"=>invitationId), args)); aws_config=aws_config)
 
 """
     BatchGetCustomDataIdentifiers()
@@ -90,7 +92,7 @@ create_findings_filter(action, findingCriteria, name, args::AbstractDict{String,
 """
     CreateInvitations()
 
- Sends an Amazon Macie membership invitation to one or more accounts.
+Sends an Amazon Macie membership invitation to one or more accounts.
 
 # Required Parameters
 - `accountIds`: An array that lists AWS account IDs, one for each account to send the invitation to.
@@ -105,10 +107,10 @@ create_invitations(accountIds, args::AbstractDict{String, <:Any}; aws_config::Ab
 """
     CreateMember()
 
- Associates an account with an Amazon Macie master account.
+Associates an account with an Amazon Macie administrator account.
 
 # Required Parameters
-- `account`: The details for the account to associate with the master account.
+- `account`: The details for the account to associate with the administrator account.
 
 # Optional Parameters
 - `tags`: A map of key-value pairs that specifies the tags to associate with the account in Amazon Macie. An account can have a maximum of 50 tags. Each tag consists of a tag key and an associated tag value. The maximum length of a tag key is 128 characters. The maximum length of a tag value is 256 characters.
@@ -178,7 +180,7 @@ delete_invitations(accountIds, args::AbstractDict{String, <:Any}; aws_config::Ab
 """
     DeleteMember()
 
-Deletes the association between an Amazon Macie master account and an account.
+Deletes the association between an Amazon Macie administrator account and an account.
 
 # Required Parameters
 - `id`: The unique identifier for the Amazon Macie resource or account that the request applies to.
@@ -237,16 +239,25 @@ disable_macie(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=glo
 Disables an account as the delegated Amazon Macie administrator account for an AWS organization.
 
 # Required Parameters
-- `adminAccountId`: The AWS account ID of the delegated administrator account.
+- `adminAccountId`: The AWS account ID of the delegated Amazon Macie administrator account.
 
 """
 disable_organization_admin_account(adminAccountId; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("DELETE", "/admin", Dict{String, Any}("adminAccountId"=>adminAccountId); aws_config=aws_config)
 disable_organization_admin_account(adminAccountId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("DELETE", "/admin", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("adminAccountId"=>adminAccountId), args)); aws_config=aws_config)
 
 """
+    DisassociateFromAdministratorAccount()
+
+Disassociates a member account from its Amazon Macie administrator account.
+
+"""
+disassociate_from_administrator_account(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/administrator/disassociate"; aws_config=aws_config)
+disassociate_from_administrator_account(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/administrator/disassociate", args; aws_config=aws_config)
+
+"""
     DisassociateFromMasterAccount()
 
-Disassociates a member account from its Amazon Macie master account.
+(Deprecated) Disassociates a member account from its Amazon Macie administrator account.
 
 """
 disassociate_from_master_account(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/master/disassociate"; aws_config=aws_config)
@@ -255,7 +266,7 @@ disassociate_from_master_account(args::AbstractDict{String, Any}; aws_config::Ab
 """
     DisassociateMember()
 
-Disassociates an Amazon Macie master account from a member account.
+Disassociates an Amazon Macie administrator account from a member account.
 
 # Required Parameters
 - `id`: The unique identifier for the Amazon Macie resource or account that the request applies to.
@@ -272,7 +283,7 @@ Enables Amazon Macie and specifies the configuration settings for a Macie accoun
 # Optional Parameters
 - `clientToken`: A unique, case-sensitive token that you provide to ensure the idempotency of the request.
 - `findingPublishingFrequency`: Specifies how often to publish updates to policy findings for the account. This includes publishing updates to AWS Security Hub and Amazon EventBridge (formerly called Amazon CloudWatch Events).
-- `status`: Specifies the status for the account. To enable Amazon Macie and start all Amazon Macie activities for the account, set this value to ENABLED.
+- `status`: Specifies the status for the account. To enable Amazon Macie and start all Macie activities for the account, set this value to ENABLED.
 """
 enable_macie(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/macie", Dict{String, Any}("clientToken"=>string(uuid4())); aws_config=aws_config)
 enable_macie(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/macie", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("clientToken"=>string(uuid4())), args)); aws_config=aws_config)
@@ -290,6 +301,15 @@ Designates an account as the delegated Amazon Macie administrator account for an
 """
 enable_organization_admin_account(adminAccountId; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/admin", Dict{String, Any}("adminAccountId"=>adminAccountId, "clientToken"=>string(uuid4())); aws_config=aws_config)
 enable_organization_admin_account(adminAccountId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/admin", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("adminAccountId"=>adminAccountId, "clientToken"=>string(uuid4())), args)); aws_config=aws_config)
+
+"""
+    GetAdministratorAccount()
+
+Retrieves information about the Amazon Macie administrator account for an account.
+
+"""
+get_administrator_account(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/administrator"; aws_config=aws_config)
+get_administrator_account(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/administrator", args; aws_config=aws_config)
 
 """
     GetBucketStatistics()
@@ -386,7 +406,7 @@ get_macie_session(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig
 """
     GetMasterAccount()
 
-Retrieves information about the Amazon Macie master account for an account.
+(Deprecated) Retrieves information about the Amazon Macie administrator account for an account.
 
 """
 get_master_account(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/master"; aws_config=aws_config)
@@ -395,7 +415,7 @@ get_master_account(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfi
 """
     GetMember()
 
-Retrieves information about a member account that's associated with an Amazon Macie master account.
+Retrieves information about an account that's associated with an Amazon Macie administrator account.
 
 # Required Parameters
 - `id`: The unique identifier for the Amazon Macie resource or account that the request applies to.
@@ -410,10 +430,11 @@ get_member(id, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=
 Retrieves (queries) quotas and aggregated usage data for one or more accounts.
 
 # Optional Parameters
-- `filterBy`: An array of objects, one for each condition to use to filter the query results. If the array contains more than one object, Amazon Macie uses an AND operator to join the conditions specified by the objects.
+- `filterBy`: An array of objects, one for each condition to use to filter the query results. If you specify more than one condition, Amazon Macie uses an AND operator to join the conditions.
 - `maxResults`: The maximum number of items to include in each page of the response.
 - `nextToken`: The nextToken string that specifies which page of results to return in a paginated response.
 - `sortBy`: The criteria to use to sort the query results.
+- `timeRange`: The inclusive time period to query usage data for. Valid values are: MONTH_TO_DATE, for the current calendar month to date; and, PAST_30_DAYS, for the preceding 30 days. If you don't specify a value, Amazon Macie provides usage data for the preceding 30 days.
 """
 get_usage_statistics(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/usage/statistics"; aws_config=aws_config)
 get_usage_statistics(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("POST", "/usage/statistics", args; aws_config=aws_config)
@@ -423,6 +444,8 @@ get_usage_statistics(args::AbstractDict{String, Any}; aws_config::AbstractAWSCon
 
 Retrieves (queries) aggregated usage data for an account.
 
+# Optional Parameters
+- `timeRange`: The time period to retrieve the data for. Valid values are: MONTH_TO_DATE, for the current calendar month to date; and, PAST_30_DAYS, for the preceding 30 days. If you don’t specify a value for this parameter, Amazon Macie provides aggregated usage data for the preceding 30 days.
 """
 get_usage_totals(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/usage"; aws_config=aws_config)
 get_usage_totals(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/usage", args; aws_config=aws_config)
@@ -494,12 +517,12 @@ list_invitations(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=
 """
     ListMembers()
 
-Retrieves information about the accounts that are associated with an Amazon Macie master account.
+Retrieves information about the accounts that are associated with an Amazon Macie administrator account.
 
 # Optional Parameters
 - `maxResults`: The maximum number of items to include in each page of a paginated response.
 - `nextToken`: The nextToken string that specifies which page of results to return in a paginated response.
-- `onlyAssociated`: Specifies which accounts to include in the response, based on the status of an account's relationship with the master account. By default, the response includes only current member accounts. To include all accounts, set the value for this parameter to false.
+- `onlyAssociated`: Specifies which accounts to include in the response, based on the status of an account's relationship with the administrator account. By default, the response includes only current member accounts. To include all accounts, set the value for this parameter to false.
 """
 list_members(; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/members"; aws_config=aws_config)
 list_members(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = macie2("GET", "/members", args; aws_config=aws_config)
@@ -629,7 +652,7 @@ update_macie_session(args::AbstractDict{String, Any}; aws_config::AbstractAWSCon
 """
     UpdateMemberSession()
 
- Enables an Amazon Macie master account to suspend or re-enable a member account.
+Enables an Amazon Macie administrator to suspend or re-enable a member account.
 
 # Required Parameters
 - `id`: The unique identifier for the Amazon Macie resource or account that the request applies to.

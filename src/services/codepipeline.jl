@@ -144,6 +144,21 @@ enable_stage_transition(pipelineName, stageName, transitionType; aws_config::Abs
 enable_stage_transition(pipelineName, stageName, transitionType, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("EnableStageTransition", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("pipelineName"=>pipelineName, "stageName"=>stageName, "transitionType"=>transitionType), args)); aws_config=aws_config)
 
 """
+    GetActionType()
+
+Returns information about an action type created for an external provider, where the action is to be used by customers of the external provider. The action can be created with any supported integration model.
+
+# Required Parameters
+- `category`: Defines what kind of action can be taken in the stage. The following are the valid values:    Source     Build     Test     Deploy     Approval     Invoke   
+- `owner`: The creator of an action type that was created with any supported integration model. There are two valid values: AWS and ThirdParty.
+- `provider`: The provider of the action type being called. The provider name is specified when the action type is created.
+- `version`: A string that describes the action type version.
+
+"""
+get_action_type(category, owner, provider, version; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("GetActionType", Dict{String, Any}("category"=>category, "owner"=>owner, "provider"=>provider, "version"=>version); aws_config=aws_config)
+get_action_type(category, owner, provider, version, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("GetActionType", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("category"=>category, "owner"=>owner, "provider"=>provider, "version"=>version), args)); aws_config=aws_config)
+
+"""
     GetJobDetails()
 
 Returns information about a job. Used for custom actions only.  When this API is called, AWS CodePipeline returns temporary credentials for the S3 bucket used to store artifacts for the pipeline, if the action requires access to that S3 bucket for input or output artifacts. This API also returns any secret values defined for the action. 
@@ -231,6 +246,7 @@ Gets a summary of all AWS CodePipeline action types associated with your account
 # Optional Parameters
 - `actionOwnerFilter`: Filters the list of action types to those created by a specified entity.
 - `nextToken`: An identifier that was returned from the previous list action types call, which can be used to return the next set of action types in the list.
+- `regionFilter`: The Region to filter on for the list of action types.
 """
 list_action_types(; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("ListActionTypes"; aws_config=aws_config)
 list_action_types(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("ListActionTypes", args; aws_config=aws_config)
@@ -256,6 +272,7 @@ list_pipeline_executions(pipelineName, args::AbstractDict{String, <:Any}; aws_co
 Gets a summary of all of the pipelines associated with your account.
 
 # Optional Parameters
+- `maxResults`: The maximum number of pipelines to return in a single call. To retrieve the remaining pipelines, make another call with the returned nextToken value. The minimum value you can specify is 1. The maximum accepted value is 1000.
 - `nextToken`: An identifier that was returned from the previous list pipelines call. It can be used to return the next set of pipelines in the list.
 """
 list_pipelines(; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("ListPipelines"; aws_config=aws_config)
@@ -504,6 +521,17 @@ Removes tags from an AWS resource.
 """
 untag_resource(resourceArn, tagKeys; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("UntagResource", Dict{String, Any}("resourceArn"=>resourceArn, "tagKeys"=>tagKeys); aws_config=aws_config)
 untag_resource(resourceArn, tagKeys, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("UntagResource", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("resourceArn"=>resourceArn, "tagKeys"=>tagKeys), args)); aws_config=aws_config)
+
+"""
+    UpdateActionType()
+
+Updates an action type that was created with any supported integration model, where the action type is to be used by customers of the action type provider. Use a JSON file with the action definition and UpdateActionType to provide the full structure.
+
+# Optional Parameters
+- `actionType`: The action type definition for the action type to be updated.
+"""
+update_action_type(; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("UpdateActionType"; aws_config=aws_config)
+update_action_type(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = codepipeline("UpdateActionType", args; aws_config=aws_config)
 
 """
     UpdatePipeline()

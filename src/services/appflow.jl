@@ -104,7 +104,7 @@ describe_connector_profiles(args::AbstractDict{String, Any}; aws_config::Abstrac
  Describes the connectors vended by Amazon AppFlow for specified connector types. If you don't specify a connector type, this operation describes all connectors vended by Amazon AppFlow. If there are more connectors than can be returned in one page, the response contains a nextToken object, which can be be passed in to the next call to the DescribeConnectors API operation to retrieve the next page. 
 
 # Optional Parameters
-- `connectorTypes`:  The type of connector, such as Salesforce, Amplitude, and so on. 
+- `connectorTypes`:  The type of connector, such as Salesforce, Amplitude, and so on.    Locke refers to a new destination known as Amazon Connect Customer Profiles. At this time, we recommend that you do not use this destination.  
 - `nextToken`:  The pagination token for the next page of data. 
 """
 describe_connectors(; aws_config::AbstractAWSConfig=global_aws_config()) = appflow("POST", "/describe-connectors"; aws_config=aws_config)

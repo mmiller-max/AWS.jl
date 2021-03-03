@@ -87,33 +87,33 @@ create_security_configuration(Name, SecurityConfiguration, args::AbstractDict{St
 """
     CreateStudio()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Creates a new Amazon EMR Studio.
+Creates a new Amazon EMR Studio.
 
 # Required Parameters
 - `AuthMode`: Specifies whether the Studio authenticates users using single sign-on (SSO) or IAM. Amazon EMR Studio currently only supports SSO authentication.
+- `DefaultS3Location`: The default Amazon S3 location to back up Amazon EMR Studio Workspaces and notebook files. A Studio user can select an alternative Amazon S3 location when creating a Workspace.
 - `EngineSecurityGroupId`: The ID of the Amazon EMR Studio Engine security group. The Engine security group allows inbound network traffic from the Workspace security group, and it must be in the same VPC specified by VpcId.
 - `Name`: A descriptive name for the Amazon EMR Studio.
 - `ServiceRole`: The IAM role that will be assumed by the Amazon EMR Studio. The service role provides a way for Amazon EMR Studio to interoperate with other AWS services.
-- `SubnetIds`: A list of subnet IDs to associate with the Studio. The subnets must belong to the VPC specified by VpcId. Studio users can create a Workspace in any of the specified subnets.
-- `UserRole`: The IAM user role that will be assumed by users and groups logged in to a Studio. The permissions attached to this IAM role can be scoped down for each user or group using session policies.
+- `SubnetIds`: A list of subnet IDs to associate with the Amazon EMR Studio. A Studio can have a maximum of 5 subnets. The subnets must belong to the VPC specified by VpcId. Studio users can create a Workspace in any of the specified subnets.
+- `UserRole`: The IAM user role that will be assumed by users and groups logged in to an Amazon EMR Studio. The permissions attached to this IAM role can be scoped down for each user or group using session policies.
 - `VpcId`: The ID of the Amazon Virtual Private Cloud (Amazon VPC) to associate with the Studio.
 - `WorkspaceSecurityGroupId`: The ID of the Amazon EMR Studio Workspace security group. The Workspace security group allows outbound network traffic to resources in the Engine security group, and it must be in the same VPC specified by VpcId.
 
 # Optional Parameters
-- `DefaultS3Location`: The default Amazon S3 location to back up EMR Studio Workspaces and notebook files. A Studio user can select an alternative Amazon S3 location when creating a Workspace.
-- `Description`: A detailed description of the Studio.
-- `Tags`: A list of tags to associate with the Studio. Tags are user-defined key-value pairs that consist of a required key string with a maximum of 128 characters, and an optional value string with a maximum of 256 characters.
+- `Description`: A detailed description of the Amazon EMR Studio.
+- `Tags`: A list of tags to associate with the Amazon EMR Studio. Tags are user-defined key-value pairs that consist of a required key string with a maximum of 128 characters, and an optional value string with a maximum of 256 characters.
 """
-create_studio(AuthMode, EngineSecurityGroupId, Name, ServiceRole, SubnetIds, UserRole, VpcId, WorkspaceSecurityGroupId; aws_config::AbstractAWSConfig=global_aws_config()) = emr("CreateStudio", Dict{String, Any}("AuthMode"=>AuthMode, "EngineSecurityGroupId"=>EngineSecurityGroupId, "Name"=>Name, "ServiceRole"=>ServiceRole, "SubnetIds"=>SubnetIds, "UserRole"=>UserRole, "VpcId"=>VpcId, "WorkspaceSecurityGroupId"=>WorkspaceSecurityGroupId); aws_config=aws_config)
-create_studio(AuthMode, EngineSecurityGroupId, Name, ServiceRole, SubnetIds, UserRole, VpcId, WorkspaceSecurityGroupId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = emr("CreateStudio", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("AuthMode"=>AuthMode, "EngineSecurityGroupId"=>EngineSecurityGroupId, "Name"=>Name, "ServiceRole"=>ServiceRole, "SubnetIds"=>SubnetIds, "UserRole"=>UserRole, "VpcId"=>VpcId, "WorkspaceSecurityGroupId"=>WorkspaceSecurityGroupId), args)); aws_config=aws_config)
+create_studio(AuthMode, DefaultS3Location, EngineSecurityGroupId, Name, ServiceRole, SubnetIds, UserRole, VpcId, WorkspaceSecurityGroupId; aws_config::AbstractAWSConfig=global_aws_config()) = emr("CreateStudio", Dict{String, Any}("AuthMode"=>AuthMode, "DefaultS3Location"=>DefaultS3Location, "EngineSecurityGroupId"=>EngineSecurityGroupId, "Name"=>Name, "ServiceRole"=>ServiceRole, "SubnetIds"=>SubnetIds, "UserRole"=>UserRole, "VpcId"=>VpcId, "WorkspaceSecurityGroupId"=>WorkspaceSecurityGroupId); aws_config=aws_config)
+create_studio(AuthMode, DefaultS3Location, EngineSecurityGroupId, Name, ServiceRole, SubnetIds, UserRole, VpcId, WorkspaceSecurityGroupId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = emr("CreateStudio", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("AuthMode"=>AuthMode, "DefaultS3Location"=>DefaultS3Location, "EngineSecurityGroupId"=>EngineSecurityGroupId, "Name"=>Name, "ServiceRole"=>ServiceRole, "SubnetIds"=>SubnetIds, "UserRole"=>UserRole, "VpcId"=>VpcId, "WorkspaceSecurityGroupId"=>WorkspaceSecurityGroupId), args)); aws_config=aws_config)
 
 """
     CreateStudioSessionMapping()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Maps a user or group to the Amazon EMR Studio specified by StudioId, and applies a session policy to refine Studio permissions for that user or group.
+Maps a user or group to the Amazon EMR Studio specified by StudioId, and applies a session policy to refine Studio permissions for that user or group.
 
 # Required Parameters
-- `IdentityType`: Specifies whether the identity to map to the Studio is a user or a group.
+- `IdentityType`: Specifies whether the identity to map to the Amazon EMR Studio is a user or a group.
 - `SessionPolicyArn`: The Amazon Resource Name (ARN) for the session policy that will be applied to the user or group. Session policies refine Studio user permissions without the need to use multiple IAM user roles.
 - `StudioId`: The ID of the Amazon EMR Studio to which the user or group will be mapped.
 
@@ -139,7 +139,7 @@ delete_security_configuration(Name, args::AbstractDict{String, <:Any}; aws_confi
 """
     DeleteStudio()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Removes an Amazon EMR Studio from the Studio metadata store.
+Removes an Amazon EMR Studio from the Studio metadata store.
 
 # Required Parameters
 - `StudioId`: The ID of the Amazon EMR Studio.
@@ -151,15 +151,15 @@ delete_studio(StudioId, args::AbstractDict{String, <:Any}; aws_config::AbstractA
 """
     DeleteStudioSessionMapping()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Removes a user or group from an Amazon EMR Studio.
+Removes a user or group from an Amazon EMR Studio.
 
 # Required Parameters
-- `IdentityType`: Specifies whether the identity to delete from the Studio is a user or a group.
+- `IdentityType`: Specifies whether the identity to delete from the Amazon EMR Studio is a user or a group.
 - `StudioId`: The ID of the Amazon EMR Studio.
 
 # Optional Parameters
 - `IdentityId`: The globally unique identifier (GUID) of the user or group to remove from the Amazon EMR Studio. For more information, see UserId and GroupId in the AWS SSO Identity Store API Reference. Either IdentityName or IdentityId must be specified.
-- `IdentityName`: The name of the user name or group to remove from the Studio. For more information, see UserName and DisplayName in the AWS SSO Identity Store API Reference. Either IdentityName or IdentityId must be specified.
+- `IdentityName`: The name of the user name or group to remove from the Amazon EMR Studio. For more information, see UserName and DisplayName in the AWS SSO Identity Store API Reference. Either IdentityName or IdentityId must be specified.
 """
 delete_studio_session_mapping(IdentityType, StudioId; aws_config::AbstractAWSConfig=global_aws_config()) = emr("DeleteStudioSessionMapping", Dict{String, Any}("IdentityType"=>IdentityType, "StudioId"=>StudioId); aws_config=aws_config)
 delete_studio_session_mapping(IdentityType, StudioId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = emr("DeleteStudioSessionMapping", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("IdentityType"=>IdentityType, "StudioId"=>StudioId), args)); aws_config=aws_config)
@@ -230,7 +230,7 @@ describe_step(ClusterId, StepId, args::AbstractDict{String, <:Any}; aws_config::
 """
     DescribeStudio()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Returns details for the specified Amazon EMR Studio including ID, Name, VPC, Studio access URL, and so on.
+Returns details for the specified Amazon EMR Studio including ID, Name, VPC, Studio access URL, and so on.
 
 # Required Parameters
 - `StudioId`: The Amazon EMR Studio ID.
@@ -263,7 +263,7 @@ get_managed_scaling_policy(ClusterId, args::AbstractDict{String, <:Any}; aws_con
 """
     GetStudioSessionMapping()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Fetches mapping details for the specified Amazon EMR Studio and identity (user or group).
+Fetches mapping details for the specified Amazon EMR Studio and identity (user or group).
 
 # Required Parameters
 - `IdentityType`: Specifies whether the identity to fetch is a user or a group.
@@ -380,7 +380,7 @@ list_security_configurations(args::AbstractDict{String, <:Any}; aws_config::Abst
 """
     ListSteps()
 
-Provides a list of steps for the cluster in reverse order unless you specify stepIds with the request of filter by StepStates. You can specify a maximum of ten stepIDs.
+Provides a list of steps for the cluster in reverse order unless you specify stepIds with the request of filter by StepStates. You can specify a maximum of 10 stepIDs.
 
 # Required Parameters
 - `ClusterId`: The identifier of the cluster for which to list the steps.
@@ -396,7 +396,7 @@ list_steps(ClusterId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWS
 """
     ListStudioSessionMappings()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Returns a list of all user or group session mappings for the EMR Studio specified by StudioId.
+Returns a list of all user or group session mappings for the Amazon EMR Studio specified by StudioId.
 
 # Optional Parameters
 - `IdentityType`: Specifies whether to return session mappings for users or groups. If not specified, the results include session mapping details for both users and groups.
@@ -409,7 +409,7 @@ list_studio_session_mappings(args::AbstractDict{String, <:Any}; aws_config::Abst
 """
     ListStudios()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Returns a list of all Amazon EMR Studios associated with the AWS account. The list includes details such as ID, Studio Access URL, and creation time for each Studio.
+Returns a list of all Amazon EMR Studios associated with the AWS account. The list includes details such as ID, Studio Access URL, and creation time for each Studio.
 
 # Optional Parameters
 - `Marker`: The pagination token that indicates the set of results to retrieve.
@@ -556,7 +556,7 @@ RunJobFlow creates and starts running a new cluster (job flow). The cluster runs
 - `LogEncryptionKmsKeyId`: The AWS KMS customer master key (CMK) used for encrypting log files. If a value is not provided, the logs remain encrypted by AES-256. This attribute is only available with Amazon EMR version 5.30.0 and later, excluding Amazon EMR 6.0.0.
 - `LogUri`: The location in Amazon S3 to write the log files of the job flow. If a value is not provided, logs are not created.
 - `ManagedScalingPolicy`:  The specified managed scaling policy for an Amazon EMR cluster. 
-- `NewSupportedProducts`:  For Amazon EMR releases 3.x and 2.x. For Amazon EMR releases 4.x and later, use Applications.  A list of strings that indicates third-party software to use with the job flow that accepts a user argument list. EMR accepts and forwards the argument list to the corresponding installation script as bootstrap action arguments. For more information, see \"Launch a Job Flow on the MapR Distribution for Hadoop\" in the Amazon EMR Developer Guide. Supported values are:   \"mapr-m3\" - launch the cluster using MapR M3 Edition.   \"mapr-m5\" - launch the cluster using MapR M5 Edition.   \"mapr\" with the user arguments specifying \"--edition,m3\" or \"--edition,m5\" - launch the job flow using MapR M3 or M5 Edition respectively.   \"mapr-m7\" - launch the cluster using MapR M7 Edition.   \"hunk\" - launch the cluster with the Hunk Big Data Analtics Platform.   \"hue\"- launch the cluster with Hue installed.   \"spark\" - launch the cluster with Apache Spark installed.   \"ganglia\" - launch the cluster with the Ganglia Monitoring System installed.  
+- `NewSupportedProducts`:  For Amazon EMR releases 3.x and 2.x. For Amazon EMR releases 4.x and later, use Applications.  A list of strings that indicates third-party software to use with the job flow that accepts a user argument list. EMR accepts and forwards the argument list to the corresponding installation script as bootstrap action arguments. For more information, see \"Launch a Job Flow on the MapR Distribution for Hadoop\" in the Amazon EMR Developer Guide. Supported values are:   \"mapr-m3\" - launch the cluster using MapR M3 Edition.   \"mapr-m5\" - launch the cluster using MapR M5 Edition.   \"mapr\" with the user arguments specifying \"--edition,m3\" or \"--edition,m5\" - launch the job flow using MapR M3 or M5 Edition respectively.   \"mapr-m7\" - launch the cluster using MapR M7 Edition.   \"hunk\" - launch the cluster with the Hunk Big Data Analytics Platform.   \"hue\"- launch the cluster with Hue installed.   \"spark\" - launch the cluster with Apache Spark installed.   \"ganglia\" - launch the cluster with the Ganglia Monitoring System installed.  
 - `PlacementGroupConfigs`: The specified placement group configuration for an Amazon EMR cluster.
 - `ReleaseLabel`: The Amazon EMR release label, which determines the version of open-source application packages installed on the cluster. Release labels are in the form emr-x.x.x, where x.x.x is an Amazon EMR release version such as emr-5.14.0. For more information about Amazon EMR release versions and included application versions and features, see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/. The release label applies only to Amazon EMR releases version 4.0 and later. Earlier versions use AmiVersion.
 - `RepoUpgradeOnBoot`: Applies only when CustomAmiID is used. Specifies which updates from the Amazon Linux AMI package repositories to apply automatically when the instance boots using the AMI. If omitted, the default is SECURITY, which indicates that only security updates are applied. If NONE is specified, no updates are applied, and all updates must be applied manually.
@@ -643,14 +643,31 @@ terminate_job_flows(JobFlowIds; aws_config::AbstractAWSConfig=global_aws_config(
 terminate_job_flows(JobFlowIds, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = emr("TerminateJobFlows", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("JobFlowIds"=>JobFlowIds), args)); aws_config=aws_config)
 
 """
+    UpdateStudio()
+
+Updates an Amazon EMR Studio configuration, including attributes such as name, description, and subnets.
+
+# Required Parameters
+- `StudioId`: The ID of the Amazon EMR Studio to update.
+
+# Optional Parameters
+- `DefaultS3Location`: A default Amazon S3 location to back up Workspaces and notebook files for the Amazon EMR Studio. A Studio user can select an alternative Amazon S3 location when creating a Workspace.
+- `Description`: A detailed description to assign to the Amazon EMR Studio.
+- `Name`: A descriptive name for the Amazon EMR Studio.
+- `SubnetIds`: A list of subnet IDs to associate with the Amazon EMR Studio. The list can include new subnet IDs, but must also include all of the subnet IDs previously associated with the Studio. The list order does not matter. A Studio can have a maximum of 5 subnets. The subnets must belong to the same VPC as the Studio. 
+"""
+update_studio(StudioId; aws_config::AbstractAWSConfig=global_aws_config()) = emr("UpdateStudio", Dict{String, Any}("StudioId"=>StudioId); aws_config=aws_config)
+update_studio(StudioId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = emr("UpdateStudio", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("StudioId"=>StudioId), args)); aws_config=aws_config)
+
+"""
     UpdateStudioSessionMapping()
 
- The Amazon EMR Studio APIs are in preview release for Amazon EMR and are subject to change.  Updates the session policy attached to the user or group for the specified Amazon EMR Studio.
+Updates the session policy attached to the user or group for the specified Amazon EMR Studio.
 
 # Required Parameters
 - `IdentityType`: Specifies whether the identity to update is a user or a group.
 - `SessionPolicyArn`: The Amazon Resource Name (ARN) of the session policy to associate with the specified user or group.
-- `StudioId`: The ID of the EMR Studio.
+- `StudioId`: The ID of the Amazon EMR Studio.
 
 # Optional Parameters
 - `IdentityId`: The globally unique identifier (GUID) of the user or group. For more information, see UserId and GroupId in the AWS SSO Identity Store API Reference. Either IdentityName or IdentityId must be specified.

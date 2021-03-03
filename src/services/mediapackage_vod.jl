@@ -5,6 +5,20 @@ using AWS.Compat
 using AWS.UUIDs
 
 """
+    ConfigureLogs()
+
+Changes the packaging group's properities to configure log subscription
+
+# Required Parameters
+- `id`: The ID of a MediaPackage VOD PackagingGroup resource.
+
+# Optional Parameters
+- `egressAccessLogs`: 
+"""
+configure_logs(id; aws_config::AbstractAWSConfig=global_aws_config()) = mediapackage_vod("PUT", "/packaging_groups/$(id)/configure_logs"; aws_config=aws_config)
+configure_logs(id, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = mediapackage_vod("PUT", "/packaging_groups/$(id)/configure_logs", args; aws_config=aws_config)
+
+"""
     CreateAsset()
 
 Creates a new MediaPackage VOD Asset resource.
@@ -51,6 +65,7 @@ Creates a new MediaPackage VOD PackagingGroup resource.
 
 # Optional Parameters
 - `authorization`: 
+- `egressAccessLogs`: 
 - `tags`: 
 """
 create_packaging_group(id; aws_config::AbstractAWSConfig=global_aws_config()) = mediapackage_vod("POST", "/packaging_groups", Dict{String, Any}("id"=>id); aws_config=aws_config)

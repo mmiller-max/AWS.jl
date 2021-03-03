@@ -101,7 +101,7 @@ Creates a mapping between an event source and an AWS Lambda function. Lambda rea
 - `StartingPosition`: The position in a stream from which to start reading. Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources. AT_TIMESTAMP is only supported for Amazon Kinesis streams.
 - `StartingPositionTimestamp`: With StartingPosition set to AT_TIMESTAMP, the time from which to start reading.
 - `Topics`: The name of the Kafka topic.
-- `TumblingWindowInSeconds`: (Streams) The duration of a processing window in seconds. The range is between 1 second up to 15 minutes.
+- `TumblingWindowInSeconds`: (Streams) The duration in seconds of a processing window. The range is between 1 second up to 900 seconds.
 """
 create_event_source_mapping(FunctionName; aws_config::AbstractAWSConfig=global_aws_config()) = lambda("POST", "/2015-03-31/event-source-mappings/", Dict{String, Any}("FunctionName"=>FunctionName); aws_config=aws_config)
 create_event_source_mapping(FunctionName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = lambda("POST", "/2015-03-31/event-source-mappings/", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("FunctionName"=>FunctionName), args)); aws_config=aws_config)
@@ -123,7 +123,7 @@ Creates a Lambda function. To create a function, you need a deployment package a
 - `Environment`: Environment variables that are accessible from function code during execution.
 - `FileSystemConfigs`: Connection settings for an Amazon EFS file system.
 - `Handler`: The name of the method within your code that Lambda calls to execute your function. The format includes the file name. It can also include namespaces and other qualifiers, depending on the runtime. For more information, see Programming Model.
-- `ImageConfig`: Configuration values that override the container image Dockerfile.
+- `ImageConfig`:  Container image configuration values that override the values in the container image Dockerfile.
 - `KMSKeyArn`: The ARN of the AWS Key Management Service (AWS KMS) key that's used to encrypt your function's environment variables. If it's not provided, AWS Lambda uses a default service key.
 - `Layers`: A list of function layers to add to the function's execution environment. Specify each layer by its ARN, including the version.
 - `MemorySize`: The amount of memory available to the function at runtime. Increasing the function's memory also increases its CPU allocation. The default value is 128 MB. The value can be any multiple of 1 MB.
@@ -820,7 +820,7 @@ Updates an event source mapping. You can change the function that AWS Lambda inv
 - `MaximumRetryAttempts`: (Streams) Discard records after the specified number of retries. The default value is infinite (-1). When set to infinite (-1), failed records will be retried until the record expires.
 - `ParallelizationFactor`: (Streams) The number of batches to process from each shard concurrently.
 - `SourceAccessConfigurations`: An array of the authentication protocol, or the VPC components to secure your event source.
-- `TumblingWindowInSeconds`: (Streams) The duration of a processing window in seconds. The range is between 1 second up to 15 minutes.
+- `TumblingWindowInSeconds`: (Streams) The duration in seconds of a processing window. The range is between 1 second up to 900 seconds.
 """
 update_event_source_mapping(UUID; aws_config::AbstractAWSConfig=global_aws_config()) = lambda("PUT", "/2015-03-31/event-source-mappings/$(UUID)"; aws_config=aws_config)
 update_event_source_mapping(UUID, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = lambda("PUT", "/2015-03-31/event-source-mappings/$(UUID)", args; aws_config=aws_config)
@@ -860,7 +860,7 @@ Modify the version-specific settings of a Lambda function. When you update a fun
 - `Environment`: Environment variables that are accessible from function code during execution.
 - `FileSystemConfigs`: Connection settings for an Amazon EFS file system.
 - `Handler`: The name of the method within your code that Lambda calls to execute your function. The format includes the file name. It can also include namespaces and other qualifiers, depending on the runtime. For more information, see Programming Model.
-- `ImageConfig`: Configuration values that override the container image Dockerfile.
+- `ImageConfig`:  Container image configuration values that override the values in the container image Dockerfile.
 - `KMSKeyArn`: The ARN of the AWS Key Management Service (AWS KMS) key that's used to encrypt your function's environment variables. If it's not provided, AWS Lambda uses a default service key.
 - `Layers`: A list of function layers to add to the function's execution environment. Specify each layer by its ARN, including the version.
 - `MemorySize`: The amount of memory available to the function at runtime. Increasing the function's memory also increases its CPU allocation. The default value is 128 MB. The value can be any multiple of 1 MB.

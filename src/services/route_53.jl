@@ -7,11 +7,11 @@ using AWS.UUIDs
 """
     ActivateKeySigningKey()
 
-Activates a key signing key (KSK) so that it can be used for signing by DNSSEC. This operation changes the KSK status to ACTIVE.
+Activates a key-signing key (KSK) so that it can be used for signing by DNSSEC. This operation changes the KSK status to ACTIVE.
 
 # Required Parameters
 - `HostedZoneId`: A unique string used to identify a hosted zone.
-- `Name`: An alphanumeric string used to identify a key signing key (KSK).
+- `Name`: A string used to identify a key-signing key (KSK). Name can include numbers, letters, and underscores (_). Name must be unique for each key-signing key in the same hosted zone.
 
 """
 activate_key_signing_key(HostedZoneId, Name; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("POST", "/2013-04-01/keysigningkey/$(HostedZoneId)/$(Name)/activate"; aws_config=aws_config)
@@ -94,14 +94,14 @@ create_hosted_zone(CallerReference, Name, args::AbstractDict{String, <:Any}; aws
 """
     CreateKeySigningKey()
 
-Creates a new key signing key (KSK) associated with a hosted zone. You can only have two KSKs per hosted zone.
+Creates a new key-signing key (KSK) associated with a hosted zone. You can only have two KSKs per hosted zone.
 
 # Required Parameters
 - `CallerReference`: A unique string that identifies the request.
 - `HostedZoneId`: The unique string (ID) used to identify a hosted zone.
-- `KeyManagementServiceArn`: The Amazon resource name (ARN) for a customer managed key (CMK) in AWS Key Management Service (KMS). The KeyManagementServiceArn must be unique for each key signing key (KSK) in a single hosted zone. To see an example of KeyManagementServiceArn that grants the correct permissions for DNSSEC, scroll down to Example.  You must configure the CMK as follows:  Status  Enabled  Key spec  ECC_NIST_P256  Key usage  Sign and verify  Key policy  The key policy must give permission for the following actions:   DescribeKey   GetPublicKey   Sign   The key policy must also include the Amazon Route 53 service in the principal for your account. Specify the following:    \"Service\": \"api-service.dnssec.route53.aws.internal\"      For more information about working with CMK in KMS, see AWS Key Management Service concepts.
-- `Name`: An alphanumeric string used to identify a key signing key (KSK). Name must be unique for each key signing key in the same hosted zone.
-- `Status`: A string specifying the initial status of the key signing key (KSK). You can set the value to ACTIVE or INACTIVE.
+- `KeyManagementServiceArn`: The Amazon resource name (ARN) for a customer managed customer master key (CMK) in AWS Key Management Service (AWS KMS). The KeyManagementServiceArn must be unique for each key-signing key (KSK) in a single hosted zone. To see an example of KeyManagementServiceArn that grants the correct permissions for DNSSEC, scroll down to Example.  You must configure the customer managed CMK as follows:  Status  Enabled  Key spec  ECC_NIST_P256  Key usage  Sign and verify  Key policy  The key policy must give permission for the following actions:   DescribeKey   GetPublicKey   Sign   The key policy must also include the Amazon Route 53 service in the principal for your account. Specify the following:    \"Service\": \"api-service.dnssec.route53.aws.internal\"      For more information about working with a customer managed CMK in AWS KMS, see AWS Key Management Service concepts.
+- `Name`: A string used to identify a key-signing key (KSK). Name can include numbers, letters, and underscores (_). Name must be unique for each key-signing key in the same hosted zone.
+- `Status`: A string specifying the initial status of the key-signing key (KSK). You can set the value to ACTIVE or INACTIVE.
 
 """
 create_key_signing_key(CallerReference, HostedZoneId, KeyManagementServiceArn, Name, Status; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("POST", "/2013-04-01/keysigningkey", Dict{String, Any}("CallerReference"=>CallerReference, "HostedZoneId"=>HostedZoneId, "KeyManagementServiceArn"=>KeyManagementServiceArn, "Name"=>Name, "Status"=>Status); aws_config=aws_config)
@@ -196,11 +196,11 @@ create_vpcassociation_authorization(Id, VPC, args::AbstractDict{String, <:Any}; 
 """
     DeactivateKeySigningKey()
 
-Deactivates a key signing key (KSK) so that it will not be used for signing by DNSSEC. This operation changes the KSK status to INACTIVE.
+Deactivates a key-signing key (KSK) so that it will not be used for signing by DNSSEC. This operation changes the KSK status to INACTIVE.
 
 # Required Parameters
 - `HostedZoneId`: A unique string used to identify a hosted zone.
-- `Name`: An alphanumeric string used to identify a key signing key (KSK).
+- `Name`: A string used to identify a key-signing key (KSK).
 
 """
 deactivate_key_signing_key(HostedZoneId, Name; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("POST", "/2013-04-01/keysigningkey/$(HostedZoneId)/$(Name)/deactivate"; aws_config=aws_config)
@@ -233,11 +233,11 @@ delete_hosted_zone(Id, args::AbstractDict{String, <:Any}; aws_config::AbstractAW
 """
     DeleteKeySigningKey()
 
-Deletes a key signing key (KSK). Before you can delete a KSK, you must deactivate it. The KSK must be deactived before you can delete it regardless of whether the hosted zone is enabled for DNSSEC signing.
+Deletes a key-signing key (KSK). Before you can delete a KSK, you must deactivate it. The KSK must be deactived before you can delete it regardless of whether the hosted zone is enabled for DNSSEC signing.
 
 # Required Parameters
 - `HostedZoneId`: A unique string used to identify a hosted zone.
-- `Name`: An alphanumeric string used to identify a key signing key (KSK).
+- `Name`: A string used to identify a key-signing key (KSK).
 
 """
 delete_key_signing_key(HostedZoneId, Name; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("DELETE", "/2013-04-01/keysigningkey/$(HostedZoneId)/$(Name)"; aws_config=aws_config)
@@ -308,7 +308,7 @@ delete_vpcassociation_authorization(Id, VPC, args::AbstractDict{String, <:Any}; 
 """
     DisableHostedZoneDNSSEC()
 
-Disables DNSSEC signing in a specific hosted zone. This action does not deactivate any key signing keys (KSKs) that are active in the hosted zone.
+Disables DNSSEC signing in a specific hosted zone. This action does not deactivate any key-signing keys (KSKs) that are active in the hosted zone.
 
 # Required Parameters
 - `Id`: A unique string used to identify a hosted zone.
@@ -371,7 +371,7 @@ get_change(Id, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=
 """
     GetCheckerIpRanges()
 
-  GetCheckerIpRanges still works, but we recommend that you download ip-ranges.json, which includes IP address ranges for all AWS services. For more information, see IP Address Ranges of Amazon Route 53 Servers in the Amazon Route 53 Developer Guide. 
+Route 53 does not perform authorization for this API because it retrieves information that is already available to the public.   GetCheckerIpRanges still works, but we recommend that you download ip-ranges.json, which includes IP address ranges for all AWS services. For more information, see IP Address Ranges of Amazon Route 53 Servers in the Amazon Route 53 Developer Guide. 
 
 """
 get_checker_ip_ranges(; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("GET", "/2013-04-01/checkeripranges"; aws_config=aws_config)
@@ -380,7 +380,7 @@ get_checker_ip_ranges(args::AbstractDict{String, Any}; aws_config::AbstractAWSCo
 """
     GetDNSSEC()
 
-Returns information about DNSSEC for a specific hosted zone, including the key signing keys (KSKs) and zone signing keys (ZSKs) in the hosted zone.
+Returns information about DNSSEC for a specific hosted zone, including the key-signing keys (KSKs) in the hosted zone.
 
 # Required Parameters
 - `Id`: A unique string used to identify a hosted zone.
@@ -392,12 +392,12 @@ get_dnssec(Id, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=
 """
     GetGeoLocation()
 
-Gets information about whether a specified geographic location is supported for Amazon Route 53 geolocation resource record sets. Use the following syntax to determine whether a continent is supported for geolocation:  GET /2013-04-01/geolocation?continentcode=two-letter abbreviation for a continent   Use the following syntax to determine whether a country is supported for geolocation:  GET /2013-04-01/geolocation?countrycode=two-character country code   Use the following syntax to determine whether a subdivision of a country is supported for geolocation:  GET /2013-04-01/geolocation?countrycode=two-character country code&amp;subdivisioncode=subdivision code  
+Gets information about whether a specified geographic location is supported for Amazon Route 53 geolocation resource record sets. Route 53 does not perform authorization for this API because it retrieves information that is already available to the public. Use the following syntax to determine whether a continent is supported for geolocation:  GET /2013-04-01/geolocation?continentcode=two-letter abbreviation for a continent   Use the following syntax to determine whether a country is supported for geolocation:  GET /2013-04-01/geolocation?countrycode=two-character country code   Use the following syntax to determine whether a subdivision of a country is supported for geolocation:  GET /2013-04-01/geolocation?countrycode=two-character country code&amp;subdivisioncode=subdivision code  
 
 # Optional Parameters
 - `continentcode`: For geolocation resource record sets, a two-letter abbreviation that identifies a continent. Amazon Route 53 supports the following continent codes:    AF: Africa    AN: Antarctica    AS: Asia    EU: Europe    OC: Oceania    NA: North America    SA: South America  
 - `countrycode`: Amazon Route 53 uses the two-letter country codes that are specified in ISO standard 3166-1 alpha-2.
-- `subdivisioncode`: For SubdivisionCode, Amazon Route 53 supports only states of the United States. For a list of state abbreviations, see Appendix B: Two–Letter State and Possession Abbreviations on the United States Postal Service website.  If you specify subdivisioncode, you must also specify US for CountryCode. 
+- `subdivisioncode`: The code for the subdivision, such as a particular state within the United States. For a list of US state abbreviations, see Appendix B: Two–Letter State and Possession Abbreviations on the United States Postal Service website. For a list of all supported subdivision codes, use the ListGeoLocations API.
 """
 get_geo_location(; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("GET", "/2013-04-01/geolocation"; aws_config=aws_config)
 get_geo_location(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = route_53("GET", "/2013-04-01/geolocation", args; aws_config=aws_config)
@@ -555,7 +555,7 @@ get_traffic_policy_instance_count(args::AbstractDict{String, Any}; aws_config::A
 """
     ListGeoLocations()
 
-Retrieves a list of supported geographic locations. Countries are listed first, and continents are listed last. If Amazon Route 53 supports subdivisions for a country (for example, states or provinces), the subdivisions for that country are listed in alphabetical order immediately after the corresponding country. For a list of supported geolocation codes, see the GeoLocation data type.
+Retrieves a list of supported geographic locations. Countries are listed first, and continents are listed last. If Amazon Route 53 supports subdivisions for a country (for example, states or provinces), the subdivisions for that country are listed in alphabetical order immediately after the corresponding country. Route 53 does not perform authorization for this API because it retrieves information that is already available to the public. For a list of supported geolocation codes, see the GeoLocation data type.
 
 # Optional Parameters
 - `maxitems`: (Optional) The maximum number of geolocations to be included in the response body for this request. If more than maxitems geolocations remain to be listed, then the value of the IsTruncated element in the response is true.

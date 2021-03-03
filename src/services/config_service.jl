@@ -206,7 +206,7 @@ delete_retention_configuration(RetentionConfigurationName, args::AbstractDict{St
 """
     DeleteStoredQuery()
 
-Deletes the stored query for an AWS account in an AWS Region. 
+Deletes the stored query for a single AWS account and a single AWS Region.
 
 # Required Parameters
 - `QueryName`: The name of the query that you want to delete.
@@ -779,7 +779,7 @@ Accepts a resource type and returns a list of resource identifiers that are aggr
 
 # Optional Parameters
 - `Filters`: Filters the results based on the ResourceFilters object.
-- `Limit`: The maximum number of resource identifiers returned on each page. The default is 100. You cannot specify a number greater than 100. If you specify 0, AWS Config uses the default.
+- `Limit`: The maximum number of resource identifiers returned on each page. You cannot specify a number greater than 100. If you specify 0, AWS Config uses the default.
 - `NextToken`: The nextToken string returned on a previous page that you use to get the next page of results in a paginated response.
 """
 list_aggregate_discovered_resources(ConfigurationAggregatorName, ResourceType; aws_config::AbstractAWSConfig=global_aws_config()) = config_service("ListAggregateDiscoveredResources", Dict{String, Any}("ConfigurationAggregatorName"=>ConfigurationAggregatorName, "ResourceType"=>ResourceType); aws_config=aws_config)
@@ -806,7 +806,7 @@ list_discovered_resources(resourceType, args::AbstractDict{String, <:Any}; aws_c
 """
     ListStoredQueries()
 
-List the stored queries for an AWS account in an AWS Region. The default is 100. 
+Lists the stored queries for a single AWS account and a single AWS Region. The default is 100. 
 
 # Optional Parameters
 - `MaxResults`: The maximum number of results to be returned with a single call.
@@ -862,7 +862,7 @@ put_config_rule(ConfigRule, args::AbstractDict{String, <:Any}; aws_config::Abstr
 """
     PutConfigurationAggregator()
 
-Creates and updates the configuration aggregator with the selected source accounts and regions. The source account can be individual account(s) or an organization.  AWS Config should be enabled in source accounts and regions you want to aggregate. If your source type is an organization, you must be signed in to the master account and all features must be enabled in your organization. AWS Config calls EnableAwsServiceAccess API to enable integration between AWS Config and AWS Organizations.  
+Creates and updates the configuration aggregator with the selected source accounts and regions. The source account can be individual account(s) or an organization.  accountIds that are passed will be replaced with existing accounts. If you want to add additional accounts into the aggregator, call DescribeAggregator to get the previous accounts and then append new ones.  AWS Config should be enabled in source accounts and regions you want to aggregate. If your source type is an organization, you must be signed in to the management account or a registered delegated administrator and all the features must be enabled in your organization. If the caller is a management account, AWS Config calls EnableAwsServiceAccess API to enable integration between AWS Config and AWS Organizations. If the caller is a registered delegated administrator, AWS Config calls ListDelegatedAdministrators API to verify whether the caller is a valid delegated administrator. To register a delegated administrator, see Register a Delegated Administrator in the AWS Config developer guide.  
 
 # Required Parameters
 - `ConfigurationAggregatorName`: The name of the configuration aggregator.
@@ -897,8 +897,8 @@ Creates or updates a conformance pack. A conformance pack is a collection of AWS
 
 # Optional Parameters
 - `ConformancePackInputParameters`: A list of ConformancePackInputParameter objects.
-- `DeliveryS3Bucket`: AWS Config stores intermediate files while processing conformance pack template.
-- `DeliveryS3KeyPrefix`: The prefix for the Amazon S3 bucket. 
+- `DeliveryS3Bucket`: Amazon S3 bucket where AWS Config stores conformance pack templates.  This field is optional. 
+- `DeliveryS3KeyPrefix`: The prefix for the Amazon S3 bucket.   This field is optional. 
 - `TemplateBody`: A string containing full conformance pack template body. Structure containing the template body with a minimum length of 1 byte and a maximum length of 51,200 bytes.  You can only use a YAML template with one resource type, that is, config rule and a remediation action.  
 - `TemplateS3Uri`: Location of file containing the template body (s3://bucketname/prefix). The uri must point to the conformance pack template (max size: 300 KB) that is located in an Amazon S3 bucket in the same region as the conformance pack.   You must have access to read Amazon S3 bucket. 
 """
@@ -935,11 +935,11 @@ put_evaluations(ResultToken, args::AbstractDict{String, <:Any}; aws_config::Abst
 """
     PutExternalEvaluation()
 
-
+Add or updates the evaluations for process checks. This API checks if the rule is a process check when the name of the AWS Config rule is provided.
 
 # Required Parameters
-- `ConfigRuleName`: 
-- `ExternalEvaluation`: 
+- `ConfigRuleName`: The name of the AWS Config rule.
+- `ExternalEvaluation`: An ExternalEvaluation object that provides details about compliance.
 
 """
 put_external_evaluation(ConfigRuleName, ExternalEvaluation; aws_config::AbstractAWSConfig=global_aws_config()) = config_service("PutExternalEvaluation", Dict{String, Any}("ConfigRuleName"=>ConfigRuleName, "ExternalEvaluation"=>ExternalEvaluation); aws_config=aws_config)
@@ -971,8 +971,8 @@ Deploys conformance packs across member accounts in an AWS Organization. Only a 
 
 # Optional Parameters
 - `ConformancePackInputParameters`: A list of ConformancePackInputParameter objects.
-- `DeliveryS3Bucket`: Location of an Amazon S3 bucket where AWS Config can deliver evaluation results. AWS Config stores intermediate files while processing conformance pack template.  The delivery bucket name should start with awsconfigconforms. For example: \"Resource\": \"arn:aws:s3:::your_bucket_name/*\". For more information, see Permissions for cross account bucket access.
-- `DeliveryS3KeyPrefix`: The prefix for the Amazon S3 bucket.
+- `DeliveryS3Bucket`: Amazon S3 bucket where AWS Config stores conformance pack templates.  This field is optional. 
+- `DeliveryS3KeyPrefix`: The prefix for the Amazon S3 bucket.  This field is optional. 
 - `ExcludedAccounts`: A list of AWS accounts to be excluded from an organization conformance pack while deploying a conformance pack.
 - `TemplateBody`: A string containing full conformance pack template body. Structure containing the template body with a minimum length of 1 byte and a maximum length of 51,200 bytes.
 - `TemplateS3Uri`: Location of file containing the template body. The uri must point to the conformance pack template (max size: 300 KB).  You must have access to read Amazon S3 bucket. 
@@ -995,7 +995,7 @@ put_remediation_configurations(RemediationConfigurations, args::AbstractDict{Str
 """
     PutRemediationExceptions()
 
-A remediation exception is when a specific resource is no longer considered for auto-remediation. This API adds a new exception or updates an exisiting exception for a specific resource with a specific AWS Config rule.   AWS Config generates a remediation exception when a problem occurs executing a remediation action to a specific resource. Remediation exceptions blocks auto-remediation until the exception is cleared. 
+A remediation exception is when a specific resource is no longer considered for auto-remediation. This API adds a new exception or updates an existing exception for a specific resource with a specific AWS Config rule.   AWS Config generates a remediation exception when a problem occurs executing a remediation action to a specific resource. Remediation exceptions blocks auto-remediation until the exception is cleared. 
 
 # Required Parameters
 - `ConfigRuleName`: The name of the AWS Config rule for which you want to create remediation exception.
@@ -1041,10 +1041,10 @@ put_retention_configuration(RetentionPeriodInDays, args::AbstractDict{String, <:
 """
     PutStoredQuery()
 
-Saves a new query or updates an existing saved query. The QueryName must be unique for an AWS account in an AWS Region. You can create upto 300 queries in an AWS account in an AWS Region.
+Saves a new query or updates an existing saved query. The QueryName must be unique for a single AWS account and a single AWS Region. You can create upto 300 queries in a single AWS account and a single AWS Region.
 
 # Required Parameters
-- `StoredQuery`: A list of StoredQuery objects. The mandatory fields are QueryName and Expression.
+- `StoredQuery`: A list of StoredQuery objects. The mandatory fields are QueryName and Expression.  When you are creating a query, you must provide a query name and an expression. When you are updating a query, you must provide a query name but updating the description is optional. 
 
 # Optional Parameters
 - `Tags`: A list of Tags object.

@@ -190,7 +190,7 @@ confirm_transit_virtual_interface(directConnectGatewayId, virtualInterfaceId, ar
 """
     CreateBGPPeer()
 
-Creates a BGP peer on the specified virtual interface. You must create a BGP peer for the corresponding address family (IPv4/IPv6) in order to access AWS resources that also use that address family. If logical redundancy is not supported by the connection, interconnect, or LAG, the BGP peer cannot be in the same address family as an existing BGP peer on the virtual interface. When creating a IPv6 BGP peer, omit the Amazon address and customer address. IPv6 addresses are automatically assigned from the Amazon pool of IPv6 addresses; you cannot specify custom IPv6 addresses. For a public virtual interface, the Autonomous System Number (ASN) must be private or already whitelisted for the virtual interface.
+Creates a BGP peer on the specified virtual interface. You must create a BGP peer for the corresponding address family (IPv4/IPv6) in order to access AWS resources that also use that address family. If logical redundancy is not supported by the connection, interconnect, or LAG, the BGP peer cannot be in the same address family as an existing BGP peer on the virtual interface. When creating a IPv6 BGP peer, omit the Amazon address and customer address. IPv6 addresses are automatically assigned from the Amazon pool of IPv6 addresses; you cannot specify custom IPv6 addresses. For a public virtual interface, the Autonomous System Number (ASN) must be private or already on the allow list for the virtual interface.
 
 # Optional Parameters
 - `newBGPPeer`: Information about the BGP peer.
@@ -496,7 +496,7 @@ describe_direct_connect_gateway_association_proposals(args::AbstractDict{String,
 """
     DescribeDirectConnectGatewayAssociations()
 
-Lists the associations between your Direct Connect gateways and virtual private gateways. You must specify a Direct Connect gateway, a virtual private gateway, or both. If you specify a Direct Connect gateway, the response contains all virtual private gateways associated with the Direct Connect gateway. If you specify a virtual private gateway, the response contains all Direct Connect gateways associated with the virtual private gateway. If you specify both, the response contains the association between the Direct Connect gateway and the virtual private gateway.
+Lists the associations between your Direct Connect gateways and virtual private gateways and transit gateways. You must specify one of the following:   A Direct Connect gateway The response contains all virtual private gateways and transit gateways associated with the Direct Connect gateway.   A virtual private gateway The response contains the Direct Connect gateway.   A transit gateway The response contains the Direct Connect gateway.   A Direct Connect gateway and a virtual private gateway The response contains the association between the Direct Connect gateway and virtual private gateway.   A Direct Connect gateway and a transit gateway The response contains the association between the Direct Connect gateway and transit gateway.  
 
 # Optional Parameters
 - `associatedGatewayId`: The ID of the associated gateway.
@@ -504,7 +504,7 @@ Lists the associations between your Direct Connect gateways and virtual private 
 - `directConnectGatewayId`: The ID of the Direct Connect gateway.
 - `maxResults`: The maximum number of results to return with a single call. To retrieve the remaining results, make another call with the returned nextToken value. If MaxResults is given a value larger than 100, only 100 results are returned.
 - `nextToken`: The token provided in the previous call to retrieve the next page.
-- `virtualGatewayId`: The ID of the virtual private gateway.
+- `virtualGatewayId`: The ID of the virtual private gateway or transit gateway.
 """
 describe_direct_connect_gateway_associations(; aws_config::AbstractAWSConfig=global_aws_config()) = direct_connect("DescribeDirectConnectGatewayAssociations"; aws_config=aws_config)
 describe_direct_connect_gateway_associations(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = direct_connect("DescribeDirectConnectGatewayAssociations", args; aws_config=aws_config)

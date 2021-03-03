@@ -86,7 +86,7 @@ Runs a SQL statement against a database.  If a call isn't part of a transaction 
 - `includeResultMetadata`: A value that indicates whether to include metadata in the results.
 - `parameters`: The parameters for the SQL statement.  Array parameters are not supported. 
 - `resultSetOptions`: Options that control how the result set is returned.
-- `schema`: The name of the database schema.
+- `schema`: The name of the database schema.  Currently, the schema parameter isn't supported. 
 - `transactionId`: The identifier of a transaction that was started by using the BeginTransaction operation. Specify the transaction ID of the transaction that you want to include the SQL statement in. If the SQL statement is not part of a transaction, don't set this parameter.
 """
 execute_statement(resourceArn, secretArn, sql; aws_config::AbstractAWSConfig=global_aws_config()) = rds_data("POST", "/Execute", Dict{String, Any}("resourceArn"=>resourceArn, "secretArn"=>secretArn, "sql"=>sql); aws_config=aws_config)

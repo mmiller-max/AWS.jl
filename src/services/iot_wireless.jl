@@ -14,6 +14,7 @@ Associates a partner account with your AWS account.
 
 # Optional Parameters
 - `ClientRequestToken`: Each resource must have a unique client request token. If you try to create a new resource with the same token as a resource that already exists, an exception occurs. If you omit this value, AWS SDKs will automatically generate a unique client request. 
+- `Tags`: The tags attached to the specified resource. Tags are metadata that can be used to manage a resource
 """
 associate_aws_account_with_partner_account(Sidewalk; aws_config::AbstractAWSConfig=global_aws_config()) = iot_wireless("POST", "/partner-accounts", Dict{String, Any}("Sidewalk"=>Sidewalk, "ClientRequestToken"=>string(uuid4())); aws_config=aws_config)
 associate_aws_account_with_partner_account(Sidewalk, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_wireless("POST", "/partner-accounts", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("Sidewalk"=>Sidewalk, "ClientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
@@ -163,6 +164,7 @@ Creates a gateway task definition.
 # Optional Parameters
 - `ClientRequestToken`: Each resource must have a unique client request token. If you try to create a new resource with the same token as a resource that already exists, an exception occurs. If you omit this value, AWS SDKs will automatically generate a unique client request. 
 - `Name`: The name of the new resource.
+- `Tags`: The tags attached to the specified resource. Tags are metadata that can be used to manage a resource
 - `Update`: Information about the gateways to update.
 """
 create_wireless_gateway_task_definition(AutoCreateTasks; aws_config::AbstractAWSConfig=global_aws_config()) = iot_wireless("POST", "/wireless-gateway-task-definitions", Dict{String, Any}("AutoCreateTasks"=>AutoCreateTasks, "ClientRequestToken"=>string(uuid4())); aws_config=aws_config)
@@ -568,7 +570,7 @@ Sends a decrypted application data frame to a device.
 # Required Parameters
 - `Id`: The ID of the wireless device to receive the data.
 - `PayloadData`: The message payload to send.
-- `TransmitMode`: The transmit mode to use to send data to the wireless device. Can be: 0 for UM (unacknowledge mode), 1 for AM (acknowledge mode), or 2 for (TM) transparent mode.
+- `TransmitMode`: The transmit mode to use to send data to the wireless device. Can be: 0 for UM (unacknowledge mode) or 1 for AM (acknowledge mode).
 
 # Optional Parameters
 - `WirelessMetadata`: Metadata about the message request.

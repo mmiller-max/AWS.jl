@@ -62,6 +62,7 @@ Adds a new playback configuration to AWS Elemental MediaTailor.
 - `AvailSuppression`: The configuration for Avail Suppression. Ad suppression can be used to turn off ad personalization in a long manifest, or if a viewer joins mid-break.
 - `Bumper`: The configuration for bumpers. Bumpers are short audio or video clips that play at the start or before the end of an ad break. 
 - `CdnConfiguration`: The configuration for using a content delivery network (CDN), like Amazon CloudFront, for content and ad segment management. 
+- `ConfigurationAliases`: Predefined aliases for dynamic variables.
 - `DashConfiguration`: The configuration for DASH content. 
 - `LivePreRollConfiguration`: The configuration for pre-roll ad insertion.
 - `ManifestProcessingRules`: The configuration for manifest processing rules. Manifest processing rules enable customization of the personalized manifests created by MediaTailor.

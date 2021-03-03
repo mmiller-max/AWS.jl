@@ -5,6 +5,37 @@ using AWS.Compat
 using AWS.UUIDs
 
 """
+    AssociateEncryptionConfig()
+
+Associate encryption configuration to an existing cluster. You can use this API to enable encryption on existing clusters which do not have encryption already enabled. This allows you to implement a defense-in-depth security strategy without migrating applications to new EKS clusters.
+
+# Required Parameters
+- `encryptionConfig`: The configuration you are using for encryption.
+- `name`: The name of the cluster that you are associating with encryption configuration.
+
+# Optional Parameters
+- `clientRequestToken`: The client request token you are using with the encryption configuration.
+"""
+associate_encryption_config(encryptionConfig, name; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/encryption-config/associate", Dict{String, Any}("encryptionConfig"=>encryptionConfig, "clientRequestToken"=>string(uuid4())); aws_config=aws_config)
+associate_encryption_config(encryptionConfig, name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/encryption-config/associate", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("encryptionConfig"=>encryptionConfig, "clientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
+
+"""
+    AssociateIdentityProviderConfig()
+
+Associate an identity provider configuration to a cluster. If you want to authenticate identities using an identity provider, you can create an identity provider configuration and associate it to your cluster. After configuring authentication to your cluster you can create Kubernetes roles and clusterroles to assign permissions to the roles, and then bind the roles to the identities using Kubernetes rolebindings and clusterrolebindings. For more information see Using RBAC Authorization in the Kubernetes documentation.
+
+# Required Parameters
+- `name`: The name of the cluster to associate the configuration to.
+- `oidc`: An object that represents an OpenID Connect (OIDC) identity provider configuration.
+
+# Optional Parameters
+- `clientRequestToken`: Unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+- `tags`: The metadata to apply to the configuration to assist with categorization and organization. Each tag consists of a key and an optional value, both of which you define.
+"""
+associate_identity_provider_config(name, oidc; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/identity-provider-configs/associate", Dict{String, Any}("oidc"=>oidc, "clientRequestToken"=>string(uuid4())); aws_config=aws_config)
+associate_identity_provider_config(name, oidc, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/identity-provider-configs/associate", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("oidc"=>oidc, "clientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
+
+"""
     CreateAddon()
 
 Creates an Amazon EKS add-on. Amazon EKS add-ons help to automate the provisioning and lifecycle management of common operational software for Amazon EKS clusters. Amazon EKS add-ons can only be used with Amazon EKS clusters running version 1.18 with platform version eks.3 or later because add-ons rely on the Server-side Apply Kubernetes feature, which is only available in Kubernetes 1.18 and later.
@@ -26,7 +57,7 @@ create_addon(addonName, name, args::AbstractDict{String, <:Any}; aws_config::Abs
 """
     CreateCluster()
 
-Creates an Amazon EKS control plane.  The Amazon EKS control plane consists of control plane instances that run the Kubernetes software, such as etcd and the API server. The control plane runs in an account managed by AWS, and the Kubernetes API is exposed via the Amazon EKS API server endpoint. Each Amazon EKS cluster control plane is single-tenant and unique and runs on its own set of Amazon EC2 instances. The cluster control plane is provisioned across multiple Availability Zones and fronted by an Elastic Load Balancing Network Load Balancer. Amazon EKS also provisions elastic network interfaces in your VPC subnets to provide connectivity from the control plane instances to the worker nodes (for example, to support kubectl exec, logs, and proxy data flows). Amazon EKS worker nodes run in your AWS account and connect to your cluster's control plane via the Kubernetes API server endpoint and a certificate file that is created for your cluster. You can use the endpointPublicAccess and endpointPrivateAccess parameters to enable or disable public and private access to your cluster's Kubernetes API server endpoint. By default, public access is enabled, and private access is disabled. For more information, see Amazon EKS Cluster Endpoint Access Control in the  Amazon EKS User Guide .  You can use the logging parameter to enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs. By default, cluster control plane logs aren't exported to CloudWatch Logs. For more information, see Amazon EKS Cluster Control Plane Logs in the  Amazon EKS User Guide .  CloudWatch Logs ingestion, archive storage, and data scanning rates apply to exported control plane logs. For more information, see Amazon CloudWatch Pricing.  Cluster creation typically takes between 10 and 15 minutes. After you create an Amazon EKS cluster, you must configure your Kubernetes tooling to communicate with the API server and launch worker nodes into your cluster. For more information, see Managing Cluster Authentication and Launching Amazon EKS Worker Nodes in the Amazon EKS User Guide.
+Creates an Amazon EKS control plane.  The Amazon EKS control plane consists of control plane instances that run the Kubernetes software, such as etcd and the API server. The control plane runs in an account managed by AWS, and the Kubernetes API is exposed via the Amazon EKS API server endpoint. Each Amazon EKS cluster control plane is single-tenant and unique and runs on its own set of Amazon EC2 instances. The cluster control plane is provisioned across multiple Availability Zones and fronted by an Elastic Load Balancing Network Load Balancer. Amazon EKS also provisions elastic network interfaces in your VPC subnets to provide connectivity from the control plane instances to the nodes (for example, to support kubectl exec, logs, and proxy data flows). Amazon EKS nodes run in your AWS account and connect to your cluster's control plane via the Kubernetes API server endpoint and a certificate file that is created for your cluster. Cluster creation typically takes several minutes. After you create an Amazon EKS cluster, you must configure your Kubernetes tooling to communicate with the API server and launch nodes into your cluster. For more information, see Managing Cluster Authentication and Launching Amazon EKS nodes in the Amazon EKS User Guide.
 
 # Required Parameters
 - `name`: The unique name to give to your cluster.
@@ -66,11 +97,11 @@ create_fargate_profile(fargateProfileName, name, podExecutionRoleArn, args::Abst
 """
     CreateNodegroup()
 
-Creates a managed worker node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see Launch template support. An Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see Managed Node Groups in the Amazon EKS User Guide. 
+Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see Launch template support. An Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see Managed Node Groups in the Amazon EKS User Guide. 
 
 # Required Parameters
 - `name`: The name of the cluster to create the node group in.
-- `nodeRole`: The Amazon Resource Name (ARN) of the IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon makes calls to AWS APIs on your behalf. Worker nodes receive permissions for these API calls through an IAM instance profile and associated policies. Before you can launch worker nodes and register them into a cluster, you must create an IAM role for those worker nodes to use when they are launched. For more information, see Amazon EKS Worker Node IAM Role in the  Amazon EKS User Guide . If you specify launchTemplate, then don't specify  IamInstanceProfile  in your launch template, or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see Launch template support in the Amazon EKS User Guide.
+- `nodeRole`: The Amazon Resource Name (ARN) of the IAM role to associate with your node group. The Amazon EKS worker node kubelet daemon makes calls to AWS APIs on your behalf. Nodes receive permissions for these API calls through an IAM instance profile and associated policies. Before you can launch nodes and register them into a cluster, you must create an IAM role for those nodes to use when they are launched. For more information, see Amazon EKS node IAM role in the  Amazon EKS User Guide . If you specify launchTemplate, then don't specify  IamInstanceProfile  in your launch template, or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see Launch template support in the Amazon EKS User Guide.
 - `nodegroupName`: The unique name to give your node group.
 - `subnets`: The subnets to use for the Auto Scaling group that is created for your node group. These subnets must have the tag key kubernetes.io/cluster/CLUSTER_NAME with a value of shared, where CLUSTER_NAME is replaced with the name of your cluster. If you specify launchTemplate, then don't specify  SubnetId  in your launch template, or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see Launch template support in the Amazon EKS User Guide.
 
@@ -195,6 +226,19 @@ describe_fargate_profile(fargateProfileName, name; aws_config::AbstractAWSConfig
 describe_fargate_profile(fargateProfileName, name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/fargate-profiles/$(fargateProfileName)", args; aws_config=aws_config)
 
 """
+    DescribeIdentityProviderConfig()
+
+Returns descriptive information about an identity provider configuration.
+
+# Required Parameters
+- `identityProviderConfig`: An object that represents an identity provider configuration.
+- `name`: The cluster name that the identity provider configuration is associated to.
+
+"""
+describe_identity_provider_config(identityProviderConfig, name; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/identity-provider-configs/describe", Dict{String, Any}("identityProviderConfig"=>identityProviderConfig); aws_config=aws_config)
+describe_identity_provider_config(identityProviderConfig, name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/identity-provider-configs/describe", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("identityProviderConfig"=>identityProviderConfig), args)); aws_config=aws_config)
+
+"""
     DescribeNodegroup()
 
 Returns descriptive information about an Amazon EKS node group.
@@ -222,6 +266,21 @@ Returns descriptive information about an update against your Amazon EKS cluster 
 """
 describe_update(name, updateId; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/updates/$(updateId)"; aws_config=aws_config)
 describe_update(name, updateId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/updates/$(updateId)", args; aws_config=aws_config)
+
+"""
+    DisassociateIdentityProviderConfig()
+
+Disassociates an identity provider configuration from a cluster. If you disassociate an identity provider from your cluster, users included in the provider can no longer access the cluster. However, you can still access the cluster with AWS IAM users.
+
+# Required Parameters
+- `identityProviderConfig`: An object that represents an identity provider configuration.
+- `name`: The name of the cluster to disassociate an identity provider from.
+
+# Optional Parameters
+- `clientRequestToken`: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+"""
+disassociate_identity_provider_config(identityProviderConfig, name; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/identity-provider-configs/disassociate", Dict{String, Any}("identityProviderConfig"=>identityProviderConfig, "clientRequestToken"=>string(uuid4())); aws_config=aws_config)
+disassociate_identity_provider_config(identityProviderConfig, name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("POST", "/clusters/$(name)/identity-provider-configs/disassociate", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("identityProviderConfig"=>identityProviderConfig, "clientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
 
 """
     ListAddons()
@@ -264,6 +323,21 @@ Lists the AWS Fargate profiles associated with the specified cluster in your AWS
 """
 list_fargate_profiles(name; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/fargate-profiles"; aws_config=aws_config)
 list_fargate_profiles(name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/fargate-profiles", args; aws_config=aws_config)
+
+"""
+    ListIdentityProviderConfigs()
+
+A list of identity provider configurations.
+
+# Required Parameters
+- `name`: The cluster name that you want to list identity provider configurations for.
+
+# Optional Parameters
+- `maxResults`: The maximum number of identity provider configurations returned by ListIdentityProviderConfigs in paginated output. When you use this parameter, ListIdentityProviderConfigs returns only maxResults results in a single page along with a nextToken response element. You can see the remaining results of the initial request by sending another ListIdentityProviderConfigs request with the returned nextToken value. This value can be between 1 and 100. If you don't use this parameter, ListIdentityProviderConfigs returns up to 100 results and a nextToken value, if applicable.
+- `nextToken`: The nextToken value returned from a previous paginated IdentityProviderConfigsRequest where maxResults was used and the results exceeded the value of that parameter. Pagination continues from the end of the previous results that returned the nextToken value.
+"""
+list_identity_provider_configs(name; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/identity-provider-configs"; aws_config=aws_config)
+list_identity_provider_configs(name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = eks("GET", "/clusters/$(name)/identity-provider-configs", args; aws_config=aws_config)
 
 """
     ListNodegroups()
@@ -312,7 +386,7 @@ list_updates(name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSCon
 """
     TagResource()
 
-Associates the specified tags to a resource with the specified resourceArn. If existing tags on a resource are not specified in the request parameters, they are not changed. When a resource is deleted, the tags associated with that resource are deleted as well. Tags that you create for Amazon EKS resources do not propagate to any other resources associated with the cluster. For example, if you tag a cluster with this operation, that tag does not automatically propagate to the subnets and worker nodes associated with the cluster.
+Associates the specified tags to a resource with the specified resourceArn. If existing tags on a resource are not specified in the request parameters, they are not changed. When a resource is deleted, the tags associated with that resource are deleted as well. Tags that you create for Amazon EKS resources do not propagate to any other resources associated with the cluster. For example, if you tag a cluster with this operation, that tag does not automatically propagate to the subnets and nodes associated with the cluster.
 
 # Required Parameters
 - `resourceArn`: The Amazon Resource Name (ARN) of the resource to which to add tags. Currently, the supported resources are Amazon EKS clusters and managed node groups.

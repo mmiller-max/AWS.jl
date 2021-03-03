@@ -35,9 +35,10 @@ Describes the detailed information about a table from metadata in the cluster. T
 
 # Required Parameters
 - `ClusterIdentifier`: The cluster identifier. This parameter is required when authenticating using either AWS Secrets Manager or temporary credentials. 
+- `Database`: The name of the database that contains the tables to be described. If ConnectedDatabase is not specified, this is also the database to connect to with your authentication credentials.
 
 # Optional Parameters
-- `Database`: The name of the database. This parameter is required when authenticating using temporary credentials.
+- `ConnectedDatabase`: A database name. The connected database is specified when you connect with your authentication credentials. 
 - `DbUser`: The database user name. This parameter is required when authenticating using temporary credentials. 
 - `MaxResults`: The maximum number of tables to return in the response. If more tables exist than fit in one response, then NextToken is returned to page through the results. 
 - `NextToken`: A value that indicates the starting point for the next set of response records in a subsequent request. If a value is returned in a response, you can retrieve the next set of records by providing this returned NextToken value in the next NextToken parameter and retrying the command. If the NextToken field is empty, all response records have been retrieved for the request. 
@@ -45,8 +46,8 @@ Describes the detailed information about a table from metadata in the cluster. T
 - `SecretArn`: The name or ARN of the secret that enables access to the database. This parameter is required when authenticating using AWS Secrets Manager. 
 - `Table`: The table name. If no table is specified, then all tables for all matching schemas are returned. If no table and no schema is specified, then all tables for all schemas in the database are returned
 """
-describe_table(ClusterIdentifier; aws_config::AbstractAWSConfig=global_aws_config()) = redshift_data("DescribeTable", Dict{String, Any}("ClusterIdentifier"=>ClusterIdentifier); aws_config=aws_config)
-describe_table(ClusterIdentifier, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = redshift_data("DescribeTable", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("ClusterIdentifier"=>ClusterIdentifier), args)); aws_config=aws_config)
+describe_table(ClusterIdentifier, Database; aws_config::AbstractAWSConfig=global_aws_config()) = redshift_data("DescribeTable", Dict{String, Any}("ClusterIdentifier"=>ClusterIdentifier, "Database"=>Database); aws_config=aws_config)
+describe_table(ClusterIdentifier, Database, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = redshift_data("DescribeTable", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("ClusterIdentifier"=>ClusterIdentifier, "Database"=>Database), args)); aws_config=aws_config)
 
 """
     ExecuteStatement()
@@ -106,9 +107,10 @@ Lists the schemas in a database. A token is returned to page through the schema 
 
 # Required Parameters
 - `ClusterIdentifier`: The cluster identifier. This parameter is required when authenticating using either AWS Secrets Manager or temporary credentials. 
-- `Database`: The name of the database. This parameter is required when authenticating using temporary credentials. 
+- `Database`: The name of the database that contains the schemas to list. If ConnectedDatabase is not specified, this is also the database to connect to with your authentication credentials.
 
 # Optional Parameters
+- `ConnectedDatabase`: A database name. The connected database is specified when you connect with your authentication credentials. 
 - `DbUser`: The database user name. This parameter is required when authenticating using temporary credentials. 
 - `MaxResults`: The maximum number of schemas to return in the response. If more schemas exist than fit in one response, then NextToken is returned to page through the results. 
 - `NextToken`: A value that indicates the starting point for the next set of response records in a subsequent request. If a value is returned in a response, you can retrieve the next set of records by providing this returned NextToken value in the next NextToken parameter and retrying the command. If the NextToken field is empty, all response records have been retrieved for the request. 
@@ -126,6 +128,7 @@ List of SQL statements. By default, only finished statements are shown. A token 
 # Optional Parameters
 - `MaxResults`: The maximum number of SQL statements to return in the response. If more SQL statements exist than fit in one response, then NextToken is returned to page through the results. 
 - `NextToken`: A value that indicates the starting point for the next set of response records in a subsequent request. If a value is returned in a response, you can retrieve the next set of records by providing this returned NextToken value in the next NextToken parameter and retrying the command. If the NextToken field is empty, all response records have been retrieved for the request. 
+- `RoleLevel`: A value that filters which statements to return in the response. If true, all statements run by the caller's IAM role are returned. If false, only statements run by the caller's IAM role in the current IAM session are returned. The default is true. 
 - `StatementName`: The name of the SQL statement specified as input to ExecuteStatement to identify the query. You can list multiple statements by providing a prefix that matches the beginning of the statement name. For example, to list myStatement1, myStatement2, myStatement3, and so on, then provide the a value of myStatement. Data API does a case-sensitive match of SQL statement names to the prefix value you provide. 
 - `Status`: The status of the SQL statement to list. Status values are defined as follows:    ABORTED - The query run was stopped by the user.    ALL - A status value that includes all query statuses. This value can be used to filter results.    FAILED - The query run failed.    FINISHED - The query has finished running.    PICKED - The query has been chosen to be run.    STARTED - The query run has started.    SUBMITTED - The query was submitted, but not yet processed.   
 """
@@ -139,9 +142,10 @@ List the tables in a database. If neither SchemaPattern nor TablePattern are spe
 
 # Required Parameters
 - `ClusterIdentifier`: The cluster identifier. This parameter is required when authenticating using either AWS Secrets Manager or temporary credentials. 
-- `Database`: The name of the database. This parameter is required when authenticating using temporary credentials.
+- `Database`: The name of the database that contains the tables to list. If ConnectedDatabase is not specified, this is also the database to connect to with your authentication credentials.
 
 # Optional Parameters
+- `ConnectedDatabase`: A database name. The connected database is specified when you connect with your authentication credentials. 
 - `DbUser`: The database user name. This parameter is required when authenticating using temporary credentials. 
 - `MaxResults`: The maximum number of tables to return in the response. If more tables exist than fit in one response, then NextToken is returned to page through the results. 
 - `NextToken`: A value that indicates the starting point for the next set of response records in a subsequent request. If a value is returned in a response, you can retrieve the next set of records by providing this returned NextToken value in the next NextToken parameter and retrying the command. If the NextToken field is empty, all response records have been retrieved for the request. 

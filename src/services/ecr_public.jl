@@ -60,6 +60,7 @@ Creates a repository in a public registry. For more information, see Amazon ECR 
 
 # Optional Parameters
 - `catalogData`: The details about the repository that are publicly visible in the Amazon ECR Public Gallery.
+- `tags`: The metadata that you apply to the repository to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define. Tag keys can have a maximum character length of 128 characters, and tag values can have a maximum length of 256 characters.
 """
 create_repository(repositoryName; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("CreateRepository", Dict{String, Any}("repositoryName"=>repositoryName); aws_config=aws_config)
 create_repository(repositoryName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("CreateRepository", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("repositoryName"=>repositoryName), args)); aws_config=aws_config)
@@ -213,6 +214,18 @@ initiate_layer_upload(repositoryName; aws_config::AbstractAWSConfig=global_aws_c
 initiate_layer_upload(repositoryName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("InitiateLayerUpload", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("repositoryName"=>repositoryName), args)); aws_config=aws_config)
 
 """
+    ListTagsForResource()
+
+List the tags for an Amazon ECR Public resource.
+
+# Required Parameters
+- `resourceArn`: The Amazon Resource Name (ARN) that identifies the resource for which to list the tags. Currently, the supported resource is an Amazon ECR Public repository.
+
+"""
+list_tags_for_resource(resourceArn; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("ListTagsForResource", Dict{String, Any}("resourceArn"=>resourceArn); aws_config=aws_config)
+list_tags_for_resource(resourceArn, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("ListTagsForResource", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("resourceArn"=>resourceArn), args)); aws_config=aws_config)
+
+"""
     PutImage()
 
 Creates or updates the image manifest and tags associated with an image. When an image is pushed and all new image layers have been uploaded, the PutImage API is called once to create or update the image manifest and the tags associated with the image.  This operation is used by the Amazon ECR proxy and is not generally used by customers for pulling and pushing images. In most cases, you should use the docker CLI to pull, tag, and push images. 
@@ -271,6 +284,32 @@ Applies a repository policy to the specified public repository to control access
 """
 set_repository_policy(policyText, repositoryName; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("SetRepositoryPolicy", Dict{String, Any}("policyText"=>policyText, "repositoryName"=>repositoryName); aws_config=aws_config)
 set_repository_policy(policyText, repositoryName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("SetRepositoryPolicy", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("policyText"=>policyText, "repositoryName"=>repositoryName), args)); aws_config=aws_config)
+
+"""
+    TagResource()
+
+Associates the specified tags to a resource with the specified resourceArn. If existing tags on a resource are not specified in the request parameters, they are not changed. When a resource is deleted, the tags associated with that resource are deleted as well.
+
+# Required Parameters
+- `resourceArn`: The Amazon Resource Name (ARN) of the resource to which to add tags. Currently, the supported resource is an Amazon ECR Public repository.
+- `tags`: The tags to add to the resource. A tag is an array of key-value pairs. Tag keys can have a maximum character length of 128 characters, and tag values can have a maximum length of 256 characters.
+
+"""
+tag_resource(resourceArn, tags; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("TagResource", Dict{String, Any}("resourceArn"=>resourceArn, "tags"=>tags); aws_config=aws_config)
+tag_resource(resourceArn, tags, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("TagResource", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("resourceArn"=>resourceArn, "tags"=>tags), args)); aws_config=aws_config)
+
+"""
+    UntagResource()
+
+Deletes specified tags from a resource.
+
+# Required Parameters
+- `resourceArn`: The Amazon Resource Name (ARN) of the resource from which to delete tags. Currently, the supported resource is an Amazon ECR Public repository.
+- `tagKeys`: The keys of the tags to be removed.
+
+"""
+untag_resource(resourceArn, tagKeys; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("UntagResource", Dict{String, Any}("resourceArn"=>resourceArn, "tagKeys"=>tagKeys); aws_config=aws_config)
+untag_resource(resourceArn, tagKeys, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = ecr_public("UntagResource", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("resourceArn"=>resourceArn, "tagKeys"=>tagKeys), args)); aws_config=aws_config)
 
 """
     UploadLayerPart()

@@ -211,11 +211,12 @@ describe_organization_configuration(args::AbstractDict{String, Any}; aws_config:
 """
     DescribeProducts()
 
-Returns information about the available products that you can subscribe to and integrate with Security Hub in order to consolidate findings.
+Returns information about product integrations in Security Hub. You can optionally provide an integration ARN. If you provide an integration ARN, then the results only include that integration. If you do not provide an integration ARN, then the results include all of the available product integrations. 
 
 # Optional Parameters
 - `MaxResults`: The maximum number of results to return.
 - `NextToken`: The token that is required for pagination. On your first call to the DescribeProducts operation, set the value of this parameter to NULL. For subsequent calls to the operation, to continue listing data, set the value of this parameter to the value returned from the previous response.
+- `ProductArn`: The ARN of the integration to return.
 """
 describe_products(; aws_config::AbstractAWSConfig=global_aws_config()) = securityhub("GET", "/products"; aws_config=aws_config)
 describe_products(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = securityhub("GET", "/products", args; aws_config=aws_config)

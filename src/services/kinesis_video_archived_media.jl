@@ -7,7 +7,7 @@ using AWS.UUIDs
 """
     GetClip()
 
-Downloads an MP4 file (clip) containing the archived, on-demand media from the specified video stream over the specified time range.  Both the StreamName and the StreamARN parameters are optional, but you must specify either the StreamName or the StreamARN when invoking this API operation.  As a prerequsite to using GetCLip API, you must obtain an endpoint using GetDataEndpoint, specifying GET_CLIP for the APIName parameter.  An Amazon Kinesis video stream has the following requirements for providing data through MP4:   The media must contain h.264 or h.265 encoded video and, optionally, AAC or G.711 encoded audio. Specifically, the codec ID of track 1 should be V_MPEG/ISO/AVC (for h.264) or V_MPEGH/ISO/HEVC (for H.265). Optionally, the codec ID of track 2 should be A_AAC (for AAC) or A_MS/ACM (for G.711).   Data retention must be greater than 0.   The video track of each fragment must contain codec private data in the Advanced Video Coding (AVC) for H.264 format and HEVC for H.265 format. For more information, see MPEG-4 specification ISO/IEC 14496-15. For information about adapting stream data to a given format, see NAL Adaptation Flags.   The audio track (if present) of each fragment must contain codec private data in the AAC format (AAC specification ISO/IEC 13818-7) or the MS Wave format.   You can monitor the amount of outgoing data by monitoring the GetClip.OutgoingBytes Amazon CloudWatch metric. For information about using CloudWatch to monitor Kinesis Video Streams, see Monitoring Kinesis Video Streams. For pricing information, see Amazon Kinesis Video Streams Pricing and AWS Pricing. Charges for outgoing AWS data apply.
+Downloads an MP4 file (clip) containing the archived, on-demand media from the specified video stream over the specified time range.  Both the StreamName and the StreamARN parameters are optional, but you must specify either the StreamName or the StreamARN when invoking this API operation.  As a prerequisite to using GetCLip API, you must obtain an endpoint using GetDataEndpoint, specifying GET_CLIP for the APIName parameter.  An Amazon Kinesis video stream has the following requirements for providing data through MP4:   The media must contain h.264 or h.265 encoded video and, optionally, AAC or G.711 encoded audio. Specifically, the codec ID of track 1 should be V_MPEG/ISO/AVC (for h.264) or V_MPEGH/ISO/HEVC (for H.265). Optionally, the codec ID of track 2 should be A_AAC (for AAC) or A_MS/ACM (for G.711).   Data retention must be greater than 0.   The video track of each fragment must contain codec private data in the Advanced Video Coding (AVC) for H.264 format and HEVC for H.265 format. For more information, see MPEG-4 specification ISO/IEC 14496-15. For information about adapting stream data to a given format, see NAL Adaptation Flags.   The audio track (if present) of each fragment must contain codec private data in the AAC format (AAC specification ISO/IEC 13818-7) or the MS Wave format.   You can monitor the amount of outgoing data by monitoring the GetClip.OutgoingBytes Amazon CloudWatch metric. For information about using CloudWatch to monitor Kinesis Video Streams, see Monitoring Kinesis Video Streams. For pricing information, see Amazon Kinesis Video Streams Pricing and AWS Pricing. Charges for outgoing AWS data apply.
 
 # Required Parameters
 - `ClipFragmentSelector`: The time range of the requested clip and the source of the timestamps.
@@ -63,24 +63,25 @@ Gets media for a list of fragments (specified by fragment number) from the archi
 
 # Required Parameters
 - `Fragments`: A list of the numbers of fragments for which to retrieve media. You retrieve these values with ListFragments.
-- `StreamName`: The name of the stream from which to retrieve fragment media.
 
+# Optional Parameters
+- `StreamARN`: The Amazon Resource Name (ARN) of the stream from which to retrieve fragment media. Specify either this parameter or the StreamName parameter.
+- `StreamName`: The name of the stream from which to retrieve fragment media. Specify either this parameter or the StreamARN parameter.
 """
-get_media_for_fragment_list(Fragments, StreamName; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/getMediaForFragmentList", Dict{String, Any}("Fragments"=>Fragments, "StreamName"=>StreamName); aws_config=aws_config)
-get_media_for_fragment_list(Fragments, StreamName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/getMediaForFragmentList", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("Fragments"=>Fragments, "StreamName"=>StreamName), args)); aws_config=aws_config)
+get_media_for_fragment_list(Fragments; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/getMediaForFragmentList", Dict{String, Any}("Fragments"=>Fragments); aws_config=aws_config)
+get_media_for_fragment_list(Fragments, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/getMediaForFragmentList", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("Fragments"=>Fragments), args)); aws_config=aws_config)
 
 """
     ListFragments()
 
 Returns a list of Fragment objects from the specified stream and timestamp range within the archived data. Listing fragments is eventually consistent. This means that even if the producer receives an acknowledgment that a fragment is persisted, the result might not be returned immediately from a request to ListFragments. However, results are typically available in less than one second.  You must first call the GetDataEndpoint API to get an endpoint. Then send the ListFragments requests to this endpoint using the --endpoint-url parameter.    If an error is thrown after invoking a Kinesis Video Streams archived media API, in addition to the HTTP status code and the response body, it includes the following pieces of information:     x-amz-ErrorType HTTP header – contains a more specific error type in addition to what the HTTP status code provides.     x-amz-RequestId HTTP header – if you want to report an issue to AWS, the support team can better diagnose the problem if given the Request Id.   Both the HTTP status code and the ErrorType header can be utilized to make programmatic decisions about whether errors are retry-able and under what conditions, as well as provide information on what actions the client programmer might need to take in order to successfully try again. For more information, see the Errors section at the bottom of this topic, as well as Common Errors.  
 
-# Required Parameters
-- `StreamName`: The name of the stream from which to retrieve a fragment list.
-
 # Optional Parameters
 - `FragmentSelector`: Describes the timestamp range and timestamp origin for the range of fragments to return.
 - `MaxResults`: The total number of fragments to return. If the total number of fragments available is more than the value specified in max-results, then a ListFragmentsOutputNextToken is provided in the output that you can use to resume pagination.
 - `NextToken`: A token to specify where to start paginating. This is the ListFragmentsOutputNextToken from a previously truncated response.
+- `StreamARN`: The Amazon Resource Name (ARN) of the stream from which to retrieve a fragment list. Specify either this parameter or the StreamName parameter.
+- `StreamName`: The name of the stream from which to retrieve a fragment list. Specify either this parameter or the StreamARN parameter.
 """
-list_fragments(StreamName; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/listFragments", Dict{String, Any}("StreamName"=>StreamName); aws_config=aws_config)
-list_fragments(StreamName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/listFragments", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("StreamName"=>StreamName), args)); aws_config=aws_config)
+list_fragments(; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/listFragments"; aws_config=aws_config)
+list_fragments(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = kinesis_video_archived_media("POST", "/listFragments", args; aws_config=aws_config)

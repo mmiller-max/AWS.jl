@@ -35,11 +35,11 @@ Creates (registers) a data catalog with the specified name and properties. Catal
 
 # Required Parameters
 - `Name`: The name of the data catalog to create. The catalog name must be unique for the AWS account and can use a maximum of 128 alphanumeric, underscore, at sign, or hyphen characters.
-- `Type`: The type of data catalog to create: LAMBDA for a federated catalog, GLUE for AWS Glue Catalog, or HIVE for an external hive metastore.
+- `Type`: The type of data catalog to create: LAMBDA for a federated catalog or HIVE for an external hive metastore.  Do not use the GLUE type. This refers to the AwsDataCatalog that already exists in your account, of which you can have only one. Specifying the GLUE type will result in an INVALID_INPUT error. 
 
 # Optional Parameters
 - `Description`: A description of the data catalog to be created.
-- `Parameters`: Specifies the Lambda function or functions to use for creating the data catalog. This is a mapping whose values depend on the catalog type.    For the HIVE data catalog type, use the following syntax. The metadata-function parameter is required. The sdk-version parameter is optional and defaults to the currently supported version.  metadata-function=lambda_arn, sdk-version=version_number     For the LAMBDA data catalog type, use one of the following sets of required parameters, but not both.   If you have one Lambda function that processes metadata and another for reading the actual data, use the following syntax. Both parameters are required.  metadata-function=lambda_arn, record-function=lambda_arn      If you have a composite Lambda function that processes both metadata and data, use the following syntax to specify your Lambda function.  function=lambda_arn       The GLUE type has no parameters.  
+- `Parameters`: Specifies the Lambda function or functions to use for creating the data catalog. This is a mapping whose values depend on the catalog type.    For the HIVE data catalog type, use the following syntax. The metadata-function parameter is required. The sdk-version parameter is optional and defaults to the currently supported version.  metadata-function=lambda_arn, sdk-version=version_number     For the LAMBDA data catalog type, use one of the following sets of required parameters, but not both.   If you have one Lambda function that processes metadata and another for reading the actual data, use the following syntax. Both parameters are required.  metadata-function=lambda_arn, record-function=lambda_arn      If you have a composite Lambda function that processes both metadata and data, use the following syntax to specify your Lambda function.  function=lambda_arn      
 - `Tags`: A list of comma separated tags to add to the data catalog that is created.
 """
 create_data_catalog(Name, Type; aws_config::AbstractAWSConfig=global_aws_config()) = athena("CreateDataCatalog", Dict{String, Any}("Name"=>Name, "Type"=>Type); aws_config=aws_config)
@@ -112,7 +112,7 @@ Deletes the workgroup with the specified name. The primary workgroup cannot be d
 - `WorkGroup`: The unique name of the workgroup to delete.
 
 # Optional Parameters
-- `RecursiveDeleteOption`: The option to delete the workgroup and its contents even if the workgroup contains any named queries.
+- `RecursiveDeleteOption`: The option to delete the workgroup and its contents even if the workgroup contains any named queries or query executions.
 """
 delete_work_group(WorkGroup; aws_config::AbstractAWSConfig=global_aws_config()) = athena("DeleteWorkGroup", Dict{String, Any}("WorkGroup"=>WorkGroup); aws_config=aws_config)
 delete_work_group(WorkGroup, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = athena("DeleteWorkGroup", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("WorkGroup"=>WorkGroup), args)); aws_config=aws_config)
@@ -132,7 +132,7 @@ get_data_catalog(Name, args::AbstractDict{String, <:Any}; aws_config::AbstractAW
 """
     GetDatabase()
 
-Returns a database object for the specfied database and data catalog.
+Returns a database object for the specified database and data catalog.
 
 # Required Parameters
 - `CatalogName`: The name of the data catalog that contains the database to return.
@@ -233,6 +233,18 @@ Lists the databases in the specified data catalog.
 """
 list_databases(CatalogName; aws_config::AbstractAWSConfig=global_aws_config()) = athena("ListDatabases", Dict{String, Any}("CatalogName"=>CatalogName); aws_config=aws_config)
 list_databases(CatalogName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = athena("ListDatabases", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("CatalogName"=>CatalogName), args)); aws_config=aws_config)
+
+"""
+    ListEngineVersions()
+
+Returns a list of engine versions that are available to choose from, including the Auto option.
+
+# Optional Parameters
+- `MaxResults`: The maximum number of engine versions to return in this request.
+- `NextToken`: A token generated by the Athena service that specifies where to continue pagination if a previous request was truncated. To obtain the next set of pages, pass in the NextToken from the response object of the previous page call.
+"""
+list_engine_versions(; aws_config::AbstractAWSConfig=global_aws_config()) = athena("ListEngineVersions"; aws_config=aws_config)
+list_engine_versions(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = athena("ListEngineVersions", args; aws_config=aws_config)
 
 """
     ListNamedQueries()
@@ -366,11 +378,11 @@ Updates the data catalog that has the specified name.
 
 # Required Parameters
 - `Name`: The name of the data catalog to update. The catalog name must be unique for the AWS account and can use a maximum of 128 alphanumeric, underscore, at sign, or hyphen characters.
-- `Type`: Specifies the type of data catalog to update. Specify LAMBDA for a federated catalog, GLUE for AWS Glue Catalog, or HIVE for an external hive metastore.
+- `Type`: Specifies the type of data catalog to update. Specify LAMBDA for a federated catalog or HIVE for an external hive metastore.  Do not use the GLUE type. This refers to the AwsDataCatalog that already exists in your account, of which you can have only one. Specifying the GLUE type will result in an INVALID_INPUT error. 
 
 # Optional Parameters
 - `Description`: New or modified text that describes the data catalog.
-- `Parameters`: Specifies the Lambda function or functions to use for updating the data catalog. This is a mapping whose values depend on the catalog type.    For the HIVE data catalog type, use the following syntax. The metadata-function parameter is required. The sdk-version parameter is optional and defaults to the currently supported version.  metadata-function=lambda_arn, sdk-version=version_number     For the LAMBDA data catalog type, use one of the following sets of required parameters, but not both.   If you have one Lambda function that processes metadata and another for reading the actual data, use the following syntax. Both parameters are required.  metadata-function=lambda_arn, record-function=lambda_arn      If you have a composite Lambda function that processes both metadata and data, use the following syntax to specify your Lambda function.  function=lambda_arn       The GLUE type has no parameters.  
+- `Parameters`: Specifies the Lambda function or functions to use for updating the data catalog. This is a mapping whose values depend on the catalog type.    For the HIVE data catalog type, use the following syntax. The metadata-function parameter is required. The sdk-version parameter is optional and defaults to the currently supported version.  metadata-function=lambda_arn, sdk-version=version_number     For the LAMBDA data catalog type, use one of the following sets of required parameters, but not both.   If you have one Lambda function that processes metadata and another for reading the actual data, use the following syntax. Both parameters are required.  metadata-function=lambda_arn, record-function=lambda_arn      If you have a composite Lambda function that processes both metadata and data, use the following syntax to specify your Lambda function.  function=lambda_arn      
 """
 update_data_catalog(Name, Type; aws_config::AbstractAWSConfig=global_aws_config()) = athena("UpdateDataCatalog", Dict{String, Any}("Name"=>Name, "Type"=>Type); aws_config=aws_config)
 update_data_catalog(Name, Type, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = athena("UpdateDataCatalog", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("Name"=>Name, "Type"=>Type), args)); aws_config=aws_config)

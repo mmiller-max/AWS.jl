@@ -66,6 +66,7 @@ Creates a new Elasticsearch domain. For more information, see Creating Elasticse
 - `AccessPolicies`:  IAM access policy as a JSON-formatted string.
 - `AdvancedOptions`:  Option to allow references to indices in an HTTP request body. Must be false when configuring access to individual sub-resources. By default, the value is true. See Configuration Advanced Options for more information.
 - `AdvancedSecurityOptions`: Specifies advanced security options.
+- `AutoTuneOptions`: Specifies Auto-Tune options.
 - `CognitoOptions`: Options to specify the Cognito user and identity pools for Kibana authentication. For more information, see Amazon Cognito Authentication for Kibana.
 - `DomainEndpointOptions`: Options to specify configuration that will be applied to the domain endpoint.
 - `EBSOptions`: Options to enable, disable and specify the type and size of EBS storage volumes. 
@@ -166,6 +167,21 @@ Delete the package.
 """
 delete_package(PackageID; aws_config::AbstractAWSConfig=global_aws_config()) = elasticsearch_service("DELETE", "/2015-01-01/packages/$(PackageID)"; aws_config=aws_config)
 delete_package(PackageID, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = elasticsearch_service("DELETE", "/2015-01-01/packages/$(PackageID)", args; aws_config=aws_config)
+
+"""
+    DescribeDomainAutoTunes()
+
+Provides scheduled Auto-Tune action details for the Elasticsearch domain, such as Auto-Tune action type, description, severity, and scheduled date.
+
+# Required Parameters
+- `DomainName`: Specifies the domain name for which you want Auto-Tune action details.
+
+# Optional Parameters
+- `MaxResults`: Set this value to limit the number of results returned. If not specified, defaults to 100.
+- `NextToken`: NextToken is sent in case the earlier API call results contain the NextToken. It is used for pagination.
+"""
+describe_domain_auto_tunes(DomainName; aws_config::AbstractAWSConfig=global_aws_config()) = elasticsearch_service("GET", "/2015-01-01/es/domain/$(DomainName)/autoTunes"; aws_config=aws_config)
+describe_domain_auto_tunes(DomainName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = elasticsearch_service("GET", "/2015-01-01/es/domain/$(DomainName)/autoTunes", args; aws_config=aws_config)
 
 """
     DescribeElasticsearchDomain()
@@ -492,6 +508,7 @@ Modifies the cluster configuration of the specified Elasticsearch domain, settin
 - `AccessPolicies`: IAM access policy as a JSON-formatted string.
 - `AdvancedOptions`: Modifies the advanced option to allow references to indices in an HTTP request body. Must be false when configuring access to individual sub-resources. By default, the value is true. See Configuration Advanced Options for more information.
 - `AdvancedSecurityOptions`: Specifies advanced security options.
+- `AutoTuneOptions`: Specifies Auto-Tune options.
 - `CognitoOptions`: Options to specify the Cognito user and identity pools for Kibana authentication. For more information, see Amazon Cognito Authentication for Kibana.
 - `DomainEndpointOptions`: Options to specify configuration that will be applied to the domain endpoint.
 - `EBSOptions`: Specify the type and size of the EBS volume that you want to use. 

@@ -103,6 +103,7 @@ Creates an address book with the specified details.
 # Optional Parameters
 - `ClientRequestToken`: A unique, user-specified identifier for the request that ensures idempotency.
 - `Description`: The description of the address book.
+- `Tags`: The tags to be added to the specified resource. Do not provide system tags.
 """
 create_address_book(Name; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateAddressBook", Dict{String, Any}("Name"=>Name, "ClientRequestToken"=>string(uuid4())); aws_config=aws_config)
 create_address_book(Name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateAddressBook", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("Name"=>Name, "ClientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
@@ -141,6 +142,7 @@ Adds a new conference provider under the user's AWS account.
 - `ClientRequestToken`: The request token of the client.
 - `IPDialIn`: The IP endpoint and protocol for calling.
 - `PSTNDialIn`: The information for PSTN conferencing.
+- `Tags`: The tags to be added to the specified resource. Do not provide system tags.
 """
 create_conference_provider(ConferenceProviderName, ConferenceProviderType, MeetingSetting; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateConferenceProvider", Dict{String, Any}("ConferenceProviderName"=>ConferenceProviderName, "ConferenceProviderType"=>ConferenceProviderType, "MeetingSetting"=>MeetingSetting, "ClientRequestToken"=>string(uuid4())); aws_config=aws_config)
 create_conference_provider(ConferenceProviderName, ConferenceProviderType, MeetingSetting, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateConferenceProvider", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("ConferenceProviderName"=>ConferenceProviderName, "ConferenceProviderType"=>ConferenceProviderType, "MeetingSetting"=>MeetingSetting, "ClientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
@@ -160,6 +162,7 @@ Creates a contact with the specified details.
 - `PhoneNumber`: The phone number of the contact in E.164 format. The phone number type defaults to WORK. You can specify PhoneNumber or PhoneNumbers. We recommend that you use PhoneNumbers, which lets you specify the phone number type and multiple numbers.
 - `PhoneNumbers`: The list of phone numbers for the contact.
 - `SipAddresses`: The list of SIP addresses for the contact.
+- `Tags`: The tags to be added to the specified resource. Do not provide system tags.
 """
 create_contact(FirstName; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateContact", Dict{String, Any}("FirstName"=>FirstName, "ClientRequestToken"=>string(uuid4())); aws_config=aws_config)
 create_contact(FirstName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateContact", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("FirstName"=>FirstName, "ClientRequestToken"=>string(uuid4())), args)); aws_config=aws_config)
@@ -175,6 +178,7 @@ Creates a gateway group with the specified details.
 
 # Optional Parameters
 - `Description`: The description of the gateway group.
+- `Tags`: The tags to be added to the specified resource. Do not provide system tags.
 """
 create_gateway_group(ClientRequestToken, Name; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateGatewayGroup", Dict{String, Any}("ClientRequestToken"=>ClientRequestToken, "Name"=>Name); aws_config=aws_config)
 create_gateway_group(ClientRequestToken, Name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateGatewayGroup", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("ClientRequestToken"=>ClientRequestToken, "Name"=>Name), args)); aws_config=aws_config)
@@ -196,6 +200,7 @@ Creates a network profile with the specified details.
 - `Description`: Detailed information about a device's network profile.
 - `EapMethod`: The authentication standard that is used in the EAP framework. Currently, EAP_TLS is supported.
 - `NextPassword`: The next, or subsequent, password of the Wi-Fi network. This password is asynchronously transmitted to the device and is used when the password of the network changes to NextPassword. 
+- `Tags`: The tags to be added to the specified resource. Do not provide system tags. 
 - `TrustAnchors`: The root certificates of your authentication server that is installed on your devices and used to trust your authentication server during EAP negotiation. 
 """
 create_network_profile(ClientRequestToken, NetworkProfileName, SecurityType, Ssid; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("CreateNetworkProfile", Dict{String, Any}("ClientRequestToken"=>ClientRequestToken, "NetworkProfileName"=>NetworkProfileName, "SecurityType"=>SecurityType, "Ssid"=>Ssid); aws_config=aws_config)
@@ -881,7 +886,8 @@ Registers an Alexa-enabled device built by an Original Equipment Manufacturer (O
 
 # Optional Parameters
 - `DeviceSerialNumber`: The key generated by the OEM that uniquely identifies a specified instance of your AVS device.
-- `RoomArn`: The ARN of the room with which to associate your AVS device.
+- `RoomArn`: The Amazon Resource Name (ARN) of the room with which to associate your AVS device.
+- `Tags`: The tags to be added to the specified resource. Do not provide system tags.
 """
 register_avsdevice(AmazonId, ClientId, ProductId, UserCode; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("RegisterAVSDevice", Dict{String, Any}("AmazonId"=>AmazonId, "ClientId"=>ClientId, "ProductId"=>ProductId, "UserCode"=>UserCode); aws_config=aws_config)
 register_avsdevice(AmazonId, ClientId, ProductId, UserCode, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = alexa_for_business("RegisterAVSDevice", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("AmazonId"=>AmazonId, "ClientId"=>ClientId, "ProductId"=>ProductId, "UserCode"=>UserCode), args)); aws_config=aws_config)
@@ -901,7 +907,7 @@ reject_skill(SkillId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWS
 """
     ResolveRoom()
 
-Determines the details for the room from which a skill request was invoked. This operation is used by skill developers.
+Determines the details for the room from which a skill request was invoked. This operation is used by skill developers. To query ResolveRoom from an Alexa skill, the skill ID needs to be authorized. When the skill is using an AWS Lambda function, the skill is automatically authorized when you publish your skill as a private skill to your AWS account. Skills that are hosted using a custom web service must be manually authorized. To get your skill authorized, contact AWS Support with your AWS account ID that queries the ResolveRoom API and skill ID. 
 
 # Required Parameters
 - `SkillId`: The ARN of the skill that was requested. Required.

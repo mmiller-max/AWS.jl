@@ -7,7 +7,7 @@ using AWS.UUIDs
 """
     BatchDeleteRecipeVersion()
 
-Deletes one or more versions of a recipe at a time. The entire request will be rejected if:   The recipe does not exist.   There is an invalid version identifier in the list of versions.   The verision list is empty.   The version list size exceeds 50.   The verison list contains duplicate entries.   The request will complete successfully, but with partial failures, if:   A version does not exist.   A version is being used by a job.   You specify LATEST_WORKING, but it's being used by a project.   The version fails to be deleted.   The LATEST_WORKING version will only be deleted if the recipe has no other versions. If you try to delete LATEST_WORKING while other versions exist (or if they can't be deleted), then LATEST_WORKING will be listed as partial failure in the response.
+Deletes one or more versions of a recipe at a time. The entire request will be rejected if:   The recipe does not exist.   There is an invalid version identifier in the list of versions.   The version list is empty.   The version list size exceeds 50.   The version list contains duplicate entries.   The request will complete successfully, but with partial failures, if:   A version does not exist.   A version is being used by a job.   You specify LATEST_WORKING, but it's being used by a project.   The version fails to be deleted.   The LATEST_WORKING version will only be deleted if the recipe has no other versions. If you try to delete LATEST_WORKING while other versions exist (or if they can't be deleted), then LATEST_WORKING will be listed as partial failure in the response.
 
 # Required Parameters
 - `RecipeVersions`: An array of version identifiers, for the recipe versions to be deleted. You can specify numeric versions (X.Y) or LATEST_WORKING. LATEST_PUBLISHED is not supported.
@@ -27,6 +27,7 @@ Creates a new DataBrew dataset.
 - `Name`: The name of the dataset to be created. Valid characters are alphanumeric (A-Z, a-z, 0-9), hyphen (-), period (.), and space.
 
 # Optional Parameters
+- `Format`: Specifies the file format of a dataset created from an S3 file or folder.
 - `FormatOptions`: 
 - `Tags`: Metadata tags to apply to this dataset.
 """
@@ -46,7 +47,8 @@ Creates a new job to analyze a dataset and create its data profile.
 
 # Optional Parameters
 - `EncryptionKeyArn`: The Amazon Resource Name (ARN) of an encryption key that is used to protect the job.
-- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - para&gt;SSE-KMS - server-side encryption with AWS KMS-managed keys.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
+- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - SSE-KMS - Server-side encryption with AWS KMS-managed keys.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
+- `JobSample`: Sample configuration for profile jobs only. Determines the number of rows on which the profile job will be executed. If a JobSample value is not provided, the default value will be used. The default value is CUSTOM_ROWS for the mode parameter and 20000 for the size parameter.
 - `LogSubscription`: Enables or disables Amazon CloudWatch logging for the job. If logging is enabled, CloudWatch writes one log stream for each job run.
 - `MaxCapacity`: The maximum number of nodes that DataBrew can use when the job processes data.
 - `MaxRetries`: The maximum number of times to retry the job after a job run fails.
@@ -103,7 +105,7 @@ Creates a new job to transform input data, using steps defined in an existing AW
 # Optional Parameters
 - `DatasetName`: The name of the dataset that this job processes.
 - `EncryptionKeyArn`: The Amazon Resource Name (ARN) of an encryption key that is used to protect the job.
-- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - Server-side encryption with AWS KMS-managed keys.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
+- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - Server-side encryption with keys managed by AWS KMS.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
 - `LogSubscription`: Enables or disables Amazon CloudWatch logging for the job. If logging is enabled, CloudWatch writes one log stream for each job run.
 - `MaxCapacity`: The maximum number of nodes that DataBrew can consume when the job processes data.
 - `MaxRetries`: The maximum number of times to retry the job after a job run fails.
@@ -215,6 +217,19 @@ Returns the definition of a specific DataBrew job.
 """
 describe_job(name; aws_config::AbstractAWSConfig=global_aws_config()) = databrew("GET", "/jobs/$(name)"; aws_config=aws_config)
 describe_job(name, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = databrew("GET", "/jobs/$(name)", args; aws_config=aws_config)
+
+"""
+    DescribeJobRun()
+
+Represents one run of a DataBrew job.
+
+# Required Parameters
+- `name`: The name of the job being processed during this run.
+- `runId`: The unique identifier of the job run.
+
+"""
+describe_job_run(name, runId; aws_config::AbstractAWSConfig=global_aws_config()) = databrew("GET", "/jobs/$(name)/jobRun/$(runId)"; aws_config=aws_config)
+describe_job_run(name, runId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = databrew("GET", "/jobs/$(name)/jobRun/$(runId)", args; aws_config=aws_config)
 
 """
     DescribeProject()
@@ -467,6 +482,7 @@ Modifies the definition of an existing DataBrew dataset.
 - `name`: The name of the dataset to be updated.
 
 # Optional Parameters
+- `Format`: Specifies the file format of a dataset created from an S3 file or folder.
 - `FormatOptions`: 
 """
 update_dataset(Input, name; aws_config::AbstractAWSConfig=global_aws_config()) = databrew("PUT", "/datasets/$(name)", Dict{String, Any}("Input"=>Input); aws_config=aws_config)
@@ -484,7 +500,8 @@ Modifies the definition of an existing profile job.
 
 # Optional Parameters
 - `EncryptionKeyArn`: The Amazon Resource Name (ARN) of an encryption key that is used to protect the job.
-- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - Server-side encryption with AWS KMS-managed keys.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
+- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - Server-side encryption with keys managed by AWS KMS.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
+- `JobSample`: Sample configuration for Profile Jobs only. Determines the number of rows on which the Profile job will be executed. If a JobSample value is not provided for profile jobs, the default value will be used. The default value is CUSTOM_ROWS for the mode parameter and 20000 for the size parameter.
 - `LogSubscription`: Enables or disables Amazon CloudWatch logging for the job. If logging is enabled, CloudWatch writes one log stream for each job run.
 - `MaxCapacity`: The maximum number of compute nodes that DataBrew can use when the job processes data.
 - `MaxRetries`: The maximum number of times to retry the job after a job run fails.
@@ -535,7 +552,7 @@ Modifies the definition of an existing DataBrew recipe job.
 
 # Optional Parameters
 - `EncryptionKeyArn`: The Amazon Resource Name (ARN) of an encryption key that is used to protect the job.
-- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - Server-side encryption with AWS KMS-managed keys.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
+- `EncryptionMode`: The encryption mode for the job, which can be one of the following:    SSE-KMS - Server-side encryption with keys managed by AWS KMS.    SSE-S3 - Server-side encryption with keys managed by Amazon S3.  
 - `LogSubscription`: Enables or disables Amazon CloudWatch logging for the job. If logging is enabled, CloudWatch writes one log stream for each job run.
 - `MaxCapacity`: The maximum number of nodes that DataBrew can consume when the job processes data.
 - `MaxRetries`: The maximum number of times to retry the job after a job run fails.

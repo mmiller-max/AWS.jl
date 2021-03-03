@@ -78,6 +78,18 @@ describe_detector_model(detectorModelName; aws_config::AbstractAWSConfig=global_
 describe_detector_model(detectorModelName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/detector-models/$(detectorModelName)", args; aws_config=aws_config)
 
 """
+    DescribeDetectorModelAnalysis()
+
+Retrieves execution information about a detector model analysis
+
+# Required Parameters
+- `analysisId`: The ID of the analysis result that you want to retrieve.
+
+"""
+describe_detector_model_analysis(analysisId; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/analysis/detector-models/$(analysisId)"; aws_config=aws_config)
+describe_detector_model_analysis(analysisId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/analysis/detector-models/$(analysisId)", args; aws_config=aws_config)
+
+"""
     DescribeInput()
 
 Describes an input.
@@ -99,6 +111,21 @@ describe_logging_options(; aws_config::AbstractAWSConfig=global_aws_config()) = 
 describe_logging_options(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/logging", args; aws_config=aws_config)
 
 """
+    GetDetectorModelAnalysisResults()
+
+Retrieves one or more analysis results of the detector model.
+
+# Required Parameters
+- `analysisId`: The ID of the analysis result that you want to retrieve.
+
+# Optional Parameters
+- `maxResults`: The maximum number of results to be returned per request.
+- `nextToken`: The token that you can use to return the next set of results.
+"""
+get_detector_model_analysis_results(analysisId; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/analysis/detector-models/$(analysisId)/results"; aws_config=aws_config)
+get_detector_model_analysis_results(analysisId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/analysis/detector-models/$(analysisId)/results", args; aws_config=aws_config)
+
+"""
     ListDetectorModelVersions()
 
 Lists all the versions of a detector model. Only the metadata associated with each detector model version is returned.
@@ -107,8 +134,8 @@ Lists all the versions of a detector model. Only the metadata associated with ea
 - `detectorModelName`: The name of the detector model whose versions are returned.
 
 # Optional Parameters
-- `maxResults`: The maximum number of results to return at one time.
-- `nextToken`: The token for the next set of results.
+- `maxResults`: The maximum number of results to be returned per request.
+- `nextToken`: The token that you can use to return the next set of results.
 """
 list_detector_model_versions(detectorModelName; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/detector-models/$(detectorModelName)/versions"; aws_config=aws_config)
 list_detector_model_versions(detectorModelName, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/detector-models/$(detectorModelName)/versions", args; aws_config=aws_config)
@@ -119,8 +146,8 @@ list_detector_model_versions(detectorModelName, args::AbstractDict{String, <:Any
 Lists the detector models you have created. Only the metadata associated with each detector model is returned.
 
 # Optional Parameters
-- `maxResults`: The maximum number of results to return at one time.
-- `nextToken`: The token for the next set of results.
+- `maxResults`: The maximum number of results to be returned per request.
+- `nextToken`: The token that you can use to return the next set of results.
 """
 list_detector_models(; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/detector-models"; aws_config=aws_config)
 list_detector_models(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/detector-models", args; aws_config=aws_config)
@@ -131,8 +158,8 @@ list_detector_models(args::AbstractDict{String, Any}; aws_config::AbstractAWSCon
 Lists the inputs you have created.
 
 # Optional Parameters
-- `maxResults`: The maximum number of results to return at one time.
-- `nextToken`: The token for the next set of results.
+- `maxResults`: The maximum number of results to be returned per request.
+- `nextToken`: The token that you can use to return the next set of results.
 """
 list_inputs(; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/inputs"; aws_config=aws_config)
 list_inputs(args::AbstractDict{String, Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("GET", "/inputs", args; aws_config=aws_config)
@@ -160,6 +187,18 @@ Sets or updates the AWS IoT Events logging options. If you update the value of a
 """
 put_logging_options(loggingOptions; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("PUT", "/logging", Dict{String, Any}("loggingOptions"=>loggingOptions); aws_config=aws_config)
 put_logging_options(loggingOptions, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("PUT", "/logging", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("loggingOptions"=>loggingOptions), args)); aws_config=aws_config)
+
+"""
+    StartDetectorModelAnalysis()
+
+Performs an analysis of your detector model. For more information, see Running detector model analyses in the AWS IoT Events Developer Guide.
+
+# Required Parameters
+- `detectorModelDefinition`: 
+
+"""
+start_detector_model_analysis(detectorModelDefinition; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("POST", "/analysis/detector-models/", Dict{String, Any}("detectorModelDefinition"=>detectorModelDefinition); aws_config=aws_config)
+start_detector_model_analysis(detectorModelDefinition, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = iot_events("POST", "/analysis/detector-models/", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("detectorModelDefinition"=>detectorModelDefinition), args)); aws_config=aws_config)
 
 """
     TagResource()

@@ -101,6 +101,7 @@ creating multiple resources.
 - `reserved`: Deprecated field that's only usable by whitelisted customers.
 - `roleArn`: An optional Amazon Resource Name (ARN) of the role to assume when running the Channel.
 - `tags`: A collection of key-value pairs.
+- `vpc`: Settings for VPC output
 """
 create_channel(; aws_config::AbstractAWSConfig=global_aws_config()) = medialive("POST", "/prod/channels", Dict{String, Any}("requestId"=>string(uuid4())); aws_config=aws_config)
 create_channel(args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = medialive("POST", "/prod/channels", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("requestId"=>string(uuid4())), args)); aws_config=aws_config)
@@ -181,6 +182,23 @@ resources.
 """
 create_multiplex_program(multiplexId, multiplexProgramSettings, programName, requestId; aws_config::AbstractAWSConfig=global_aws_config()) = medialive("POST", "/prod/multiplexes/$(multiplexId)/programs", Dict{String, Any}("multiplexProgramSettings"=>multiplexProgramSettings, "programName"=>programName, "requestId"=>requestId); aws_config=aws_config)
 create_multiplex_program(multiplexId, multiplexProgramSettings, programName, requestId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = medialive("POST", "/prod/multiplexes/$(multiplexId)/programs", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("multiplexProgramSettings"=>multiplexProgramSettings, "programName"=>programName, "requestId"=>requestId), args)); aws_config=aws_config)
+
+"""
+    CreatePartnerInput()
+
+Create a partner input
+
+# Required Parameters
+- `inputId`: Unique ID of the input.
+
+# Optional Parameters
+- `requestId`: Unique identifier of the request to ensure the request is handled
+exactly once in case of retries.
+
+- `tags`: A collection of key-value pairs.
+"""
+create_partner_input(inputId; aws_config::AbstractAWSConfig=global_aws_config()) = medialive("POST", "/prod/inputs/$(inputId)/partners", Dict{String, Any}("requestId"=>string(uuid4())); aws_config=aws_config)
+create_partner_input(inputId, args::AbstractDict{String, <:Any}; aws_config::AbstractAWSConfig=global_aws_config()) = medialive("POST", "/prod/inputs/$(inputId)/partners", Dict{String, Any}(mergewith(_merge, Dict{String, Any}("requestId"=>string(uuid4())), args)); aws_config=aws_config)
 
 """
     CreateTags()
